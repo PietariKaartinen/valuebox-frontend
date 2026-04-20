@@ -5,6 +5,7 @@ import ProductDetailClient from './ProductDetailClient';
 import ProductCarousel from '@/components/product/ProductCarousel';
 import ProductJsonLd from '@/components/product/ProductJsonLd';
 import Link from 'next/link';
+import { MAIN_CATEGORIES, SUBCATEGORIES } from '@/lib/constants';
 
 interface Props {
   params: { handle: string };
@@ -49,11 +50,45 @@ export default async function ProductPage({ params }: Props) {
     console.error('Error fetching recommendations:', error);
   }
 
-  // Build breadcrumb
-  const firstCollection = product.collections[0];
-  const breadcrumbs = [
-    { label: firstCollection?.title || 'Shop', href: firstCollection ? `/shop/${firstCollection.handle}` : '/shop' },
-  ];
+  // Build breadcrumb: Home > Category > Subcategory > Product Title
+  // Determine category and subcategory from product collections
+  const allSubcategories = Object.values(SUBCATEGORIES).flat();
+  const productCollections = product.collections || [];
+
+  let categoryBreadcrumb: { label: string; href: string } | null = null;
+  let subcategoryBreadcrumb: { label: string; href: string } | null = null;
+
+  for (const col of productCollections) {
+    // Check if it's a main category
+    const mainCat = MAIN_CATEGORIES.find((c) => c.handle === col.handle);
+    if (mainCat) {
+      categoryBreadcrumb = { label: mainCat.title, href: `/shop/${mainCat.handle}` };
+    }
+    // Check if it's a subcategory
+    const subCat = allSubcategories.find((s) => s.handle === col.handle);
+    if (subCat) {
+      subcategoryBreadcrumb = { label: subCat.title, href: `/shop/${subCat.handle}` };
+    }
+  }
+
+  // If we found a subcategory but not a main category, find the parent
+  if (subcategoryBreadcrumb && !categoryBreadcrumb) {
+    for (const [parentHandle, subs] of Object.entries(SUBCATEGORIES)) {
+      if (subs.some((s) => s.handle === subcategoryBreadcrumb!.href.replace('/shop/', ''))) {
+        const mainCat = MAIN_CATEGORIES.find((c) => c.handle === parentHandle);
+        if (mainCat) {
+          categoryBreadcrumb = { label: mainCat.title, href: `/shop/${mainCat.handle}` };
+        }
+        break;
+      }
+    }
+  }
+
+  // Fallback: use first collection if no category found
+  if (!categoryBreadcrumb && productCollections.length > 0) {
+    const firstCol = productCollections[0];
+    categoryBreadcrumb = { label: firstCol.title, href: `/shop/${firstCol.handle}` };
+  }
 
   return (
     <>
@@ -61,17 +96,23 @@ export default async function ProductPage({ params }: Props) {
       <div className="bg-gray-50 border-b border-gray-100">
         <div className="container-main py-3">
           <nav className="flex items-center gap-2 text-sm">
-            {breadcrumbs.map((crumb, i) => (
-              <span key={i} className="flex items-center gap-2">
-                <Link href={crumb.href} className="text-accent hover:text-accent-dark">
-                  {crumb.label}
+            <Link href="/" className="text-sky-600 hover:underline">
+              Home
+            </Link>
+            <span className="text-gray-300">›</span>
+            {categoryBreadcrumb && (
+              <>
+                <Link href={categoryBreadcrumb.href} className="text-sky-600 hover:underline">
+                  {categoryBreadcrumb.label}
                 </Link>
                 <span className="text-gray-300">›</span>
-              </span>
-            ))}
-            {product.vendor && (
+              </>
+            )}
+            {subcategoryBreadcrumb && (
               <>
-                <span className="text-accent">{product.vendor}</span>
+                <Link href={subcategoryBreadcrumb.href} className="text-sky-600 hover:underline">
+                  {subcategoryBreadcrumb.label}
+                </Link>
                 <span className="text-gray-300">›</span>
               </>
             )}

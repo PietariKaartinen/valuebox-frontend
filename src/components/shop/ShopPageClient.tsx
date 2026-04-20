@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import type { ParsedProduct } from '@/lib/shopify/types';
 import ProductGrid from '@/components/product/ProductGrid';
 import FilterSidebar, { type FilterState } from './FilterSidebar';
@@ -13,6 +15,7 @@ interface ShopPageClientProps {
   products: ParsedProduct[];
   collectionHandle?: string;
   collectionTitle?: string;
+  categoryCounts?: Record<string, number>;
 }
 
 const ITEMS_PER_PAGE = 12;
@@ -21,7 +24,9 @@ export default function ShopPageClient({
   products,
   collectionHandle,
   collectionTitle,
+  categoryCounts: serverCategoryCounts,
 }: ShopPageClientProps) {
+  const router = useRouter();
   const [sortBy, setSortBy] = useState('BEST_SELLING');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAll, setShowAll] = useState(false);
@@ -35,30 +40,43 @@ export default function ShopPageClient({
     discountMin: null,
     priceMin: 0,
     priceMax: 149,
-    inStock: null,
+    rating: null,
+    inStock: false,
   });
 
-  // Compute category counts
-  const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    products.forEach((p) => {
-      p.collections.forEach((c) => {
-        counts[c.handle] = (counts[c.handle] || 0) + 1;
-      });
-    });
-    return counts;
-  }, [products]);
+  // Use server-provided category counts (global counts, not filtered)
+  const categoryCounts = serverCategoryCounts || {};
 
-  // Filter products
+  // Handle category change via URL navigation
+  const handleFilterChange = (newFilters: FilterState) => {
+    // Check if categories changed
+    if (newFilters.categories !== filters.categories &&
+        JSON.stringify(newFilters.categories) !== JSON.stringify(filters.categories)) {
+      const newCategories = newFilters.categories;
+
+      if (newCategories.length === 0) {
+        // No category selected — go to /shop (all products)
+        router.push('/shop');
+        return;
+      } else if (newCategories.length === 1) {
+        // Single category — navigate to that category page
+        router.push(`/shop/${newCategories[0]}`);
+        return;
+      }
+      // Multiple categories — navigate to the last selected one
+      const lastCategory = newCategories[newCategories.length - 1];
+      router.push(`/shop/${lastCategory}`);
+      return;
+    }
+
+    // For non-category filter changes, update state normally
+    setFilters(newFilters);
+    setCurrentPage(1);
+  };
+
+  // Filter products (client-side for non-category filters)
   const filteredProducts = useMemo(() => {
     let result = [...products];
-
-    // Category filter
-    if (filters.categories.length > 0) {
-      result = result.filter((p) =>
-        p.collections.some((c) => filters.categories.includes(c.handle))
-      );
-    }
 
     // Discount filter
     if (filters.discountMin) {
@@ -72,6 +90,11 @@ export default function ShopPageClient({
       (p) => p.price >= filters.priceMin && p.price <= filters.priceMax
     );
 
+    // Availability filter
+    if (filters.inStock) {
+      result = result.filter((p) => p.availableForSale);
+    }
+
     // Sort
     switch (sortBy) {
       case 'PRICE_ASC':
@@ -81,7 +104,6 @@ export default function ShopPageClient({
         result.sort((a, b) => b.price - a.price);
         break;
       case 'CREATED_AT':
-        // Keep original order (newest from API)
         break;
       case 'DISCOUNT':
         result.sort(
@@ -89,7 +111,6 @@ export default function ShopPageClient({
         );
         break;
       default:
-        // BEST_SELLING - keep original order
         break;
     }
 
@@ -111,11 +132,10 @@ export default function ShopPageClient({
     const cat = MAIN_CATEGORIES.find((c) => c.handle === handle);
     activeFilters.push({
       label: cat?.title || getCollectionTitle(handle),
-      onRemove: () =>
-        setFilters((f) => ({
-          ...f,
-          categories: f.categories.filter((c) => c !== handle),
-        })),
+      onRemove: () => {
+        // Navigate to /shop when removing category
+        router.push('/shop');
+      },
     });
   });
   if (filters.discountMin) {
@@ -124,15 +144,27 @@ export default function ShopPageClient({
       onRemove: () => setFilters((f) => ({ ...f, discountMin: null })),
     });
   }
+  if (filters.inStock) {
+    activeFilters.push({
+      label: 'In stock only',
+      onRemove: () => setFilters((f) => ({ ...f, inStock: false })),
+    });
+  }
 
   const clearAllFilters = () => {
-    setFilters({
-      categories: [],
-      discountMin: null,
-      priceMin: 0,
-      priceMax: 149,
-      inStock: null,
-    });
+    // Navigate to /shop to clear category filter
+    if (collectionHandle) {
+      router.push('/shop');
+    } else {
+      setFilters({
+        categories: [],
+        discountMin: null,
+        priceMin: 0,
+        priceMax: 149,
+        rating: null,
+        inStock: false,
+      });
+    }
   };
 
   return (
@@ -140,11 +172,19 @@ export default function ShopPageClient({
       {/* Header */}
       <div className="bg-gradient-to-b from-navy to-navy-light text-white py-8">
         <div className="container-main text-center">
-          <div className="text-sm text-gray-400 mb-2">
-            <span>Home</span>
-            <span className="mx-2">›</span>
-            <span className="text-accent">Shop For Deals</span>
-          </div>
+          <nav className="text-sm text-gray-400 mb-2 flex items-center justify-center gap-2">
+            <Link href="/" className="text-sky-600 hover:underline">Home</Link>
+            <span>›</span>
+            {collectionHandle ? (
+              <>
+                <Link href="/shop" className="text-sky-600 hover:underline">Shop</Link>
+                <span>›</span>
+                <span className="text-gray-200">{collectionTitle || 'Shop For Deals'}</span>
+              </>
+            ) : (
+              <span className="text-gray-200">Shop For Deals</span>
+            )}
+          </nav>
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
             {collectionTitle || 'Shop For Deals'}
           </h1>
@@ -223,7 +263,7 @@ export default function ShopPageClient({
           {/* Desktop sidebar */}
           <FilterSidebar
             filters={filters}
-            onFilterChange={setFilters}
+            onFilterChange={handleFilterChange}
             categoryCounts={categoryCounts}
           />
 
@@ -231,7 +271,7 @@ export default function ShopPageClient({
           {mobileFiltersOpen && (
             <FilterSidebar
               filters={filters}
-              onFilterChange={setFilters}
+              onFilterChange={handleFilterChange}
               categoryCounts={categoryCounts}
               isOpen={mobileFiltersOpen}
               onClose={() => setMobileFiltersOpen(false)}

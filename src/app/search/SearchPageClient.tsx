@@ -17,10 +17,16 @@ export default function SearchPageClient({ query, products, error }: SearchPageC
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="container-main py-8">
-          <nav className="text-sm text-gray-500 mb-4">
-            <Link href="/" className="hover:text-accent">Home</Link>
-            <span className="mx-2">&gt;</span>
-            <span className="text-gray-900">Search</span>
+          <nav className="text-sm text-gray-500 mb-4 flex items-center gap-2">
+            <Link href="/" className="text-sky-600 hover:underline">Home</Link>
+            <span className="text-gray-300">›</span>
+            <Link href="/shop" className="text-sky-600 hover:underline">Search</Link>
+            {query && (
+              <>
+                <span className="text-gray-300">›</span>
+                <span className="text-gray-500">&ldquo;{query}&rdquo;</span>
+              </>
+            )}
           </nav>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
             {query ? (
