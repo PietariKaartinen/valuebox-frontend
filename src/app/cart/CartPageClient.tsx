@@ -9,9 +9,29 @@ import { FREE_SHIPPING_THRESHOLD } from '@/lib/constants';
 import { formatPrice } from '@/lib/utils';
 import ProductCarousel from '@/components/product/ProductCarousel';
 import type { ParsedProduct } from '@/lib/shopify/types';
+import Skeleton from '@/components/ui/Skeleton';
+
+function CartSkeleton() {
+  return (
+    <div className="bg-gray-50 min-h-screen">
+      <div className="container-main py-8">
+        <Skeleton className="h-20 w-full rounded-xl mb-6" />
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-4">
+            <Skeleton className="h-32 w-full rounded-xl" />
+            <Skeleton className="h-32 w-full rounded-xl" />
+          </div>
+          <div>
+            <Skeleton className="h-64 w-full rounded-xl" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function CartPageClient() {
-  const { cart, clearCart } = useCart();
+  const { cart, clearCart, isInitializing } = useCart();
   const [couponCode, setCouponCode] = useState('');
   const [recommendedProducts, setRecommendedProducts] = useState<ParsedProduct[]>([]);
 
@@ -30,6 +50,11 @@ export default function CartPageClient() {
     }
     fetchRecommended();
   }, []);
+
+  // Show skeleton while cart is loading from cookie
+  if (isInitializing) {
+    return <CartSkeleton />;
+  }
 
   const subtotal = cart ? parseFloat(cart.cost.subtotalAmount.amount) : 0;
   const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
@@ -133,6 +158,7 @@ export default function CartPageClient() {
                 value={couponCode}
                 onChange={(e) => setCouponCode(e.target.value)}
                 className="flex-1 text-sm focus:outline-none"
+                aria-label="Coupon or promo code"
               />
               <button className="bg-navy text-white text-sm font-semibold px-5 py-2 rounded-lg hover:bg-navy-light transition-colors">
                 Apply

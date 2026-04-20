@@ -9,6 +9,7 @@ interface CartContextType {
   cartCount: number;
   cartTotal: number;
   isLoading: boolean;
+  isInitializing: boolean;
   addToCart: (variantId: string, quantity?: number) => Promise<void>;
   updateQuantity: (lineId: string, quantity: number) => Promise<void>;
   removeFromCart: (lineId: string) => Promise<void>;
@@ -20,6 +21,7 @@ const CartContext = createContext<CartContextType>({
   cartCount: 0,
   cartTotal: 0,
   isLoading: false,
+  isInitializing: true,
   addToCart: async () => {},
   updateQuantity: async () => {},
   removeFromCart: async () => {},
@@ -43,6 +45,7 @@ async function cartFetch(action: string, body: Record<string, unknown>): Promise
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<ShopifyCart | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
 
   const cartCount = cart?.totalQuantity || 0;
   const cartTotal = cart ? parseFloat(cart.cost.totalAmount.amount) : 0;
@@ -58,7 +61,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
         .catch(() => {
           // Cart might be expired, clear cookie
           setCookie('valuebox_cart_id', '', -1);
+        })
+        .finally(() => {
+          setIsInitializing(false);
         });
+    } else {
+      setIsInitializing(false);
     }
   }, []);
 
@@ -134,6 +142,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         cartCount,
         cartTotal,
         isLoading,
+        isInitializing,
         addToCart,
         updateQuantity,
         removeFromCart,
