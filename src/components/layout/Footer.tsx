@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import CountryCurrencySelector from './CountryCurrencySelector';
+import NewsletterSignup from './NewsletterSignup';
 
 export default function Footer({ showNewsletter = true }: { showNewsletter?: boolean }) {
-  const [email, setEmail] = useState('');
 
   return (
     <footer>
@@ -43,30 +43,7 @@ export default function Footer({ showNewsletter = true }: { showNewsletter?: boo
                   Weekly drops, member-only offers,<br className="hidden md:block" /> and under $25 finds.
                 </p>
               </div>
-              <div className="flex-1 max-w-md w-full">
-                <div className="flex gap-2">
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="flex-1 px-4 py-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                  />
-                  <button className="bg-accent hover:bg-accent-dark text-white font-semibold px-6 py-3 rounded-lg transition-colors whitespace-nowrap">
-                    Subscribe
-                  </button>
-                </div>
-                <div className="flex items-center gap-2 mt-2">
-                  <input type="checkbox" id="member-checkbox" className="rounded" />
-                  <label htmlFor="member-checkbox" className="text-gray-400 text-xs">
-                    I&apos;m a ValueBox+ member
-                  </label>
-                </div>
-                <p className="text-gray-500 text-xs mt-1">
-                  Unsubscribe anytime. By subscribing, you agree to our{' '}
-                  <Link href="#" className="underline hover:text-gray-300">Privacy Policy</Link>.
-                </p>
-              </div>
+              <NewsletterSignup variant="footer" />
             </div>
           </div>
         </div>
@@ -139,12 +116,7 @@ export default function Footer({ showNewsletter = true }: { showNewsletter?: boo
                 </div>
                 <span className="text-gray-900 font-bold text-lg">ValueBox</span>
               </Link>
-              <span className="text-gray-400 text-sm flex items-center gap-1">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                </svg>
-                Deliver to <strong className="text-gray-700">United States</strong> - USD
-              </span>
+              <CountryCurrencySelector variant="footer" />
             </div>
 
             {/* Social icons */}
@@ -167,13 +139,7 @@ export default function Footer({ showNewsletter = true }: { showNewsletter?: boo
                   <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                 </svg>
               </Link>
-              {/* Flag */}
-              <button className="flex items-center gap-1 text-gray-400 hover:text-gray-600">
-                <span className="text-lg">🇺🇸</span>
-                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
+
             </div>
           </div>
 

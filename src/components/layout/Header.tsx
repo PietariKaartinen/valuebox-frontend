@@ -8,7 +8,8 @@ import { useCart } from '@/contexts/CartProvider';
 import { NAV_CATEGORIES, MAIN_CATEGORIES, SUBCATEGORIES } from '@/lib/constants';
 import { formatPrice } from '@/lib/utils';
 import MobileNav from './MobileNav';
-import { Search, User, ShoppingCart, Menu, ChevronDown, MapPin, Zap } from 'lucide-react';
+import { Search, User, ShoppingCart, Menu, ChevronDown, Zap } from 'lucide-react';
+import CountryCurrencySelector from './CountryCurrencySelector';
 
 interface PredictiveResult {
   id: string;
@@ -82,10 +83,7 @@ export default function Header() {
         {/* Top thin bar */}
         <div className="bg-navy text-gray-300 text-xs py-1.5">
           <div className="container-main flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5" />
-              <span>Deliver to <strong className="text-white">United States</strong> - USD</span>
-            </div>
+            <CountryCurrencySelector variant="header" />
             <div className="hidden md:flex items-center gap-4 text-gray-400">
               <Link href="#" className="hover:text-white transition-colors">Help</Link>
               <Link href="#" className="hover:text-white transition-colors">Track Order</Link>

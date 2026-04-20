@@ -4,6 +4,7 @@ import './globals.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { CartProvider } from '@/contexts/CartProvider';
+import { CountryCurrencyProvider } from '@/contexts/CountryCurrencyProvider';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -35,11 +36,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body className="font-sans">
-        <CartProvider>
-          <Header />
-          <main className="min-h-screen">{children}</main>
-          <Footer />
-        </CartProvider>
+        <CountryCurrencyProvider>
+          <CartProvider>
+            <Header />
+            <main className="min-h-screen">{children}</main>
+            <Footer />
+          </CartProvider>
+        </CountryCurrencyProvider>
       </body>
     </html>
   );
