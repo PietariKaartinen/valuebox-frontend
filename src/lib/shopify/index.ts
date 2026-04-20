@@ -5,6 +5,7 @@ import {
   GET_COLLECTION_BY_HANDLE,
   GET_COLLECTIONS,
   GET_PRODUCT_RECOMMENDATIONS,
+  GET_COLLECTION_PRODUCT_COUNTS,
 } from './queries/products';
 import {
   CREATE_CART,
@@ -167,6 +168,33 @@ export async function getCollections() {
   });
 
   return data.collections.edges.map((e) => e.node);
+}
+
+export async function getCategoryCounts(): Promise<Record<string, number>> {
+  const { MAIN_CATEGORIES } = await import('@/lib/constants');
+  const handles = MAIN_CATEGORIES.map((c) => c.handle);
+
+  const variables: Record<string, string> = {};
+  handles.forEach((h, i) => {
+    variables[`handle${i + 1}`] = h;
+  });
+
+  const data = await shopifyFetch<Record<string, { handle: string; productsCount: { count: number } } | null>>({
+    query: GET_COLLECTION_PRODUCT_COUNTS,
+    variables,
+    cache: 'force-cache',
+    tags: ['category-counts'],
+  });
+
+  const counts: Record<string, number> = {};
+  for (let i = 1; i <= handles.length; i++) {
+    const collection = data[`c${i}`];
+    if (collection) {
+      counts[collection.handle] = collection.productsCount.count;
+    }
+  }
+
+  return counts;
 }
 
 export async function getProductRecommendations(productId: string): Promise<ParsedProduct[]> {

@@ -179,3 +179,23 @@ export const GET_PRODUCT_RECOMMENDATIONS = `
     }
   }
 `;
+
+export const GET_COLLECTION_PRODUCT_COUNTS = `
+  query GetCollectionProductCounts(
+    $handle1: String!
+    $handle2: String!
+    $handle3: String!
+    $handle4: String!
+    $handle5: String!
+    $handle6: String!
+    $handle7: String!
+  ) {
+    c1: collection(handle: $handle1) { handle productsCount { count } }
+    c2: collection(handle: $handle2) { handle productsCount { count } }
+    c3: collection(handle: $handle3) { handle productsCount { count } }
+    c4: collection(handle: $handle4) { handle productsCount { count } }
+    c5: collection(handle: $handle5) { handle productsCount { count } }
+    c6: collection(handle: $handle6) { handle productsCount { count } }
+    c7: collection(handle: $handle7) { handle productsCount { count } }
+  }
+`;

@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getCollectionByHandle } from '@/lib/shopify';
+import { getCollectionByHandle, getCategoryCounts } from '@/lib/shopify';
 import { ALL_COLLECTION_HANDLES } from '@/lib/constants';
 import { getCollectionTitle } from '@/lib/utils';
 import ShopPageClient from '@/components/shop/ShopPageClient';
@@ -29,6 +29,8 @@ export default async function CollectionPage({ params }: Props) {
   const { handle } = params;
 
   let data;
+  let categoryCounts: Record<string, number> = {};
+
   try {
     data = await getCollectionByHandle(handle, { first: 50 });
   } catch (error) {
@@ -40,11 +42,18 @@ export default async function CollectionPage({ params }: Props) {
     notFound();
   }
 
+  try {
+    categoryCounts = await getCategoryCounts();
+  } catch (error) {
+    console.error('Error fetching category counts:', error);
+  }
+
   return (
     <ShopPageClient
       products={data.products}
       collectionHandle={handle}
       collectionTitle={data.collection?.title || getCollectionTitle(handle)}
+      categoryCounts={categoryCounts}
     />
   );
 }
