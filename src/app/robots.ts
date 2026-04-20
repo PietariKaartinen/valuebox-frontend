@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/api/', '/cart'],
     },
-    sitemap: 'https://valuebox.com/sitemap.xml',
+    sitemap: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://valuebox.com'}/sitemap.xml`,
   };
 }

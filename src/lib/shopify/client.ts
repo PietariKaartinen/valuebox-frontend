@@ -1,6 +1,6 @@
 const domain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN!;
 const storefrontToken = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN!;
-const apiVersion = '2026-04';
+const apiVersion = '2025-01';
 
 const endpoint = `https://${domain}/api/${apiVersion}/graphql.json`;
 

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getProductByHandle, getCollectionByHandle } from '@/lib/shopify';
 import ProductDetailClient from './ProductDetailClient';
 import ProductCarousel from '@/components/product/ProductCarousel';
+import ProductJsonLd from '@/components/product/ProductJsonLd';
 import Link from 'next/link';
 
 interface Props {
@@ -78,6 +79,9 @@ export default async function ProductPage({ params }: Props) {
           </nav>
         </div>
       </div>
+
+      {/* JSON-LD Structured Data */}
+      <ProductJsonLd product={product} />
 
       {/* Product detail */}
       <ProductDetailClient product={product} />

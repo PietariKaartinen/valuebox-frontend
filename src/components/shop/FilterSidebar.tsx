@@ -239,7 +239,7 @@ export default function FilterSidebar({
           <div className="absolute left-0 top-0 bottom-0 w-80 bg-white p-6 overflow-y-auto shadow-xl">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-bold text-gray-900">Filters</h3>
-              <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+              <button onClick={onClose} className="w-11 h-11 flex items-center justify-center text-gray-400 hover:text-gray-600 -mr-2" aria-label="Close filters">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>

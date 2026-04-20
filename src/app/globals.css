@@ -9,6 +9,10 @@
   body {
     @apply bg-white text-gray-900 antialiased;
   }
+  /* Improve focus visibility for accessibility */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-sky-500;
+  }
 }
 
 @layer components {
@@ -23,10 +27,22 @@
   }
 }
 
+/* Scrollbar hiding utility */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Skeleton animation */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
 }

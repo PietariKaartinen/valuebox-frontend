@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { ParsedProduct } from '@/lib/shopify/types';
-import BadgeDisplay from './BadgeDisplay';
 import PriceDisplay from './PriceDisplay';
 import AddToCartButton from './AddToCartButton';
 
@@ -16,23 +15,39 @@ export default function ProductCard({ product }: ProductCardProps) {
   const isLowStock = product.totalInventory > 0 && product.totalInventory <= 10;
 
   return (
-    <div className="group relative bg-white rounded-lg border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all duration-200 overflow-hidden">
+    <div className="group relative bg-white rounded-lg border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col">
       <Link href={`/products/${product.handle}`} className="block">
         {/* Image container */}
         <div className="relative aspect-square bg-gray-50 overflow-hidden">
-          {/* Discount badge */}
-          {product.discountPercent && (
-            <span className="absolute top-2 left-2 bg-sale text-white text-[10px] font-bold px-2 py-1 rounded-full z-10">
-              -{product.discountPercent}%
-            </span>
-          )}
+          {/* Badges row */}
+          <div className="absolute top-2 left-2 flex items-center gap-1 z-10">
+            {/* Badge from metafield */}
+            {product.badge && (
+              <span className={`text-white text-[10px] font-bold px-2 py-1 rounded-full ${
+                product.badge === 'TOP PICK' ? 'bg-navy' :
+                product.badge === 'BEST SELLER' ? 'bg-teal-600' :
+                product.badge === 'FLASH DEAL' ? 'bg-flash-deal' :
+                product.badge === 'HOT DEAL' ? 'bg-red-500' :
+                'bg-navy'
+              }`}>
+                {product.badge}
+              </span>
+            )}
 
-          {/* Low stock indicator */}
-          {isLowStock && (
-            <span className="absolute top-2 left-2 ml-[60px] bg-green-600 text-white text-[10px] font-bold px-2 py-1 rounded-full z-10">
-              {product.totalInventory} IN STOCK
-            </span>
-          )}
+            {/* Low stock indicator */}
+            {isLowStock && (
+              <span className="bg-green-600 text-white text-[10px] font-bold px-2 py-1 rounded-full">
+                {product.totalInventory} IN STOCK
+              </span>
+            )}
+
+            {/* Discount badge */}
+            {product.discountPercent && (
+              <span className="bg-sale text-white text-[10px] font-bold px-2 py-1 rounded-full">
+                -{product.discountPercent}%
+              </span>
+            )}
+          </div>
 
           {product.featuredImage ? (
             <Image
@@ -52,10 +67,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Content */}
-        <div className="p-3">
-          {/* Badge */}
-          <BadgeDisplay badge={product.badge} className="mb-1.5" />
-
+        <div className="p-3 flex-1 flex flex-col">
           {/* Title */}
           <h3 className="text-sm font-medium text-gray-900 line-clamp-2 min-h-[2.5rem] mb-1">
             {product.title}
@@ -79,13 +91,15 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
 
           {/* Price */}
-          <PriceDisplay
-            price={product.price}
-            compareAtPrice={product.compareAtPrice}
-            memberPrice={product.memberPrice}
-            currencyCode={product.currencyCode}
-            size="sm"
-          />
+          <div className="mt-auto">
+            <PriceDisplay
+              price={product.price}
+              compareAtPrice={product.compareAtPrice}
+              memberPrice={product.memberPrice}
+              currencyCode={product.currencyCode}
+              size="sm"
+            />
+          </div>
         </div>
       </Link>
 

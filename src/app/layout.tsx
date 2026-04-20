@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   },
   description:
     'Shop millions of products at unbeatable prices. Join ValueBox+ for exclusive member pricing, giveaways, and premium benefits.',
-  metadataBase: new URL('https://valuebox.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://valuebox.com'),
   openGraph: {
     type: 'website',
     siteName: 'ValueBox',
