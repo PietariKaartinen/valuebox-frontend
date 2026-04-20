@@ -9,7 +9,7 @@ const badgeStyles: Record<string, string> = {
   'FLASH DEAL': 'bg-orange-500 text-white',
   'TOP PICK': 'bg-navy text-white',
   'HOT DEAL': 'bg-red-600 text-white',
-  'BEST SELLER': 'bg-navy text-white',
+  'BEST SELLER': 'bg-teal-600 text-white',
   'NEW ARRIVAL': 'bg-accent text-white',
 };
 

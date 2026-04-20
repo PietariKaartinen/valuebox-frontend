@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { ParsedProduct } from '@/lib/shopify/types';
 import PriceDisplay from './PriceDisplay';
 import AddToCartButton from './AddToCartButton';
+import BadgeDisplay from './BadgeDisplay';
 
 interface ProductCardProps {
   product: ParsedProduct;
@@ -23,15 +24,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <div className="absolute top-2 left-2 flex items-center gap-1 z-10">
             {/* Badge from metafield */}
             {product.badge && (
-              <span className={`text-white text-[10px] font-bold px-2 py-1 rounded-full ${
-                product.badge === 'TOP PICK' ? 'bg-navy' :
-                product.badge === 'BEST SELLER' ? 'bg-teal-600' :
-                product.badge === 'FLASH DEAL' ? 'bg-flash-deal' :
-                product.badge === 'HOT DEAL' ? 'bg-red-500' :
-                'bg-navy'
-              }`}>
-                {product.badge}
-              </span>
+              <BadgeDisplay badge={product.badge} />
             )}
 
             {/* Low stock indicator */}
