@@ -8,7 +8,8 @@ interface FilterState {
   discountMin: number | null;
   priceMin: number;
   priceMax: number;
-  inStock: boolean | null;
+  rating: number | null;
+  inStock: boolean;
 }
 
 interface FilterSidebarProps {
@@ -48,6 +49,25 @@ export default function FilterSidebar({
   const setDiscount = (min: number | null) => {
     onFilterChange({ ...filters, discountMin: min });
   };
+
+  const setRating = (rating: number | null) => {
+    // TODO: connect to real review data
+    onFilterChange({ ...filters, rating: filters.rating === rating ? null : rating });
+  };
+
+  const toggleInStock = () => {
+    onFilterChange({ ...filters, inStock: !filters.inStock });
+  };
+
+  const StarIcon = ({ filled }: { filled: boolean }) => (
+    <svg
+      className={`w-4 h-4 ${filled ? 'text-amber-400' : 'text-gray-200'}`}
+      fill="currentColor"
+      viewBox="0 0 20 20"
+    >
+      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+    </svg>
+  );
 
   const sidebarContent = (
     <div className="space-y-6">
@@ -122,6 +142,14 @@ export default function FilterSidebar({
                 </span>
               </label>
             ))}
+            {filters.discountMin && (
+              <button
+                onClick={() => setDiscount(null)}
+                className="text-xs text-accent hover:text-accent-dark"
+              >
+                Clear
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -142,10 +170,6 @@ export default function FilterSidebar({
         </button>
         {expandedSections.price && (
           <div>
-            <label className="flex items-center gap-2 mb-3 cursor-pointer">
-              <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-accent focus:ring-accent" />
-              <span className="text-sm text-gray-600">Free shipping</span>
-            </label>
             <div className="flex items-center gap-2 mb-3">
               <div className="relative flex-1">
                 <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">$</span>
@@ -159,6 +183,7 @@ export default function FilterSidebar({
                   min={0}
                 />
               </div>
+              <span className="text-gray-400 text-xs">to</span>
               <div className="relative flex-1">
                 <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">$</span>
                 <input
@@ -193,20 +218,42 @@ export default function FilterSidebar({
           onClick={() => toggleSection('rating')}
         >
           Rating
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          <svg
+            className={`w-4 h-4 transition-transform ${expandedSections.rating ? 'rotate-180' : ''}`}
+            fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </button>
-      </div>
-
-      {/* Brand */}
-      <div>
-        <button className="flex items-center justify-between w-full text-sm font-semibold text-gray-900 mb-3">
-          Brand (2)
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+        {expandedSections.rating && (
+          <div className="space-y-2">
+            {[4, 3, 2, 1].map((stars) => (
+              <label key={stars} className="flex items-center gap-2 cursor-pointer group">
+                <input
+                  type="radio"
+                  name="rating"
+                  checked={filters.rating === stars}
+                  onChange={() => setRating(stars)}
+                  className="w-4 h-4 border-gray-300 text-accent focus:ring-accent"
+                />
+                <div className="flex items-center gap-0.5">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <StarIcon key={i} filled={i <= stars} />
+                  ))}
+                </div>
+                <span className="text-xs text-gray-500">& up</span>
+              </label>
+            ))}
+            {filters.rating && (
+              <button
+                onClick={() => setRating(null)}
+                className="text-xs text-accent hover:text-accent-dark"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Availability */}
@@ -223,6 +270,21 @@ export default function FilterSidebar({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </button>
+        {expandedSections.availability && (
+          <div>
+            <label className="flex items-center gap-2 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={filters.inStock}
+                onChange={toggleInStock}
+                className="w-4 h-4 rounded border-gray-300 text-accent focus:ring-accent"
+              />
+              <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">
+                In stock only
+              </span>
+            </label>
+          </div>
+        )}
       </div>
     </div>
   );
