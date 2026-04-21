@@ -1,10 +1,31 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 const quickCategories = [
-  { label: 'Electronics', href: '/shop/electronics', emoji: '💻' },
-  { label: 'Fashion', href: '/shop/fashion-accessories', emoji: '👗' },
-  { label: 'Home & Kitchen', href: '/shop/home-kitchen', emoji: '🏠' },
-  { label: 'Sports', href: '/shop/fitness-wellness', emoji: '⚽' },
+  {
+    label: 'Electronics',
+    href: '/shop/electronics',
+    image: '/images/hero/electronics.png',
+    gradient: 'from-[#1E3A5F] to-[#2563EB]',
+  },
+  {
+    label: 'Fashion',
+    href: '/shop/fashion-accessories',
+    image: '/images/hero/fashion.png',
+    gradient: 'from-[#BE185D] to-[#EC4899]',
+  },
+  {
+    label: 'Home & Kitchen',
+    href: '/shop/home-kitchen',
+    image: '/images/hero/home-kitchen.png',
+    gradient: 'from-[#065F46] to-[#10B981]',
+  },
+  {
+    label: 'Sports',
+    href: '/shop/fitness-wellness',
+    image: '/images/hero/sports.png',
+    gradient: 'from-[#C2410C] to-[#F97316]',
+  },
 ];
 
 export default function Hero() {
@@ -58,18 +79,27 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Right - Category pills grid */}
+          {/* Right - Category cards grid with illustration PNGs */}
           <div className="hidden md:grid grid-cols-2 gap-3">
             {quickCategories.map((cat) => (
               <Link
                 key={cat.label}
                 href={cat.href}
-                className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-white hover:bg-white/20 transition-colors group"
+                className={`relative overflow-hidden rounded-xl bg-gradient-to-br ${cat.gradient} p-5 text-white min-h-[140px] group`}
               >
-                <span className="text-3xl mb-2 block">{cat.emoji}</span>
-                <span className="font-semibold group-hover:text-accent transition-colors">
-                  {cat.label}
-                </span>
+                <div className="relative z-10">
+                  <h3 className="text-lg font-bold">{cat.label}</h3>
+                  <span className="text-sm opacity-90 group-hover:opacity-100 transition-opacity">
+                    Shop Now &rarr;
+                  </span>
+                </div>
+                <Image
+                  src={cat.image}
+                  alt={cat.label}
+                  width={160}
+                  height={160}
+                  className="absolute right-0 bottom-0 h-full w-auto object-contain"
+                />
               </Link>
             ))}
           </div>

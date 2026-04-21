@@ -8,6 +8,7 @@ import BadgeDisplay from '@/components/product/BadgeDisplay';
 import AddToCartButton from '@/components/product/AddToCartButton';
 import { useCart } from '@/contexts/CartProvider';
 import { formatPrice } from '@/lib/utils';
+import PaymentIcons from '@/components/ui/PaymentIcons';
 
 interface ProductDetailClientProps {
   product: ParsedProduct;
@@ -204,12 +205,8 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               <p className="text-sm text-gray-500 mb-3">
                 4.8/5 from 3,000+ customers
               </p>
-              <div className="flex items-center justify-center gap-2">
-                <div className="w-10 h-6 bg-red-600 rounded text-white text-[8px] font-bold flex items-center justify-center">MC</div>
-                <div className="w-10 h-6 bg-blue-700 rounded text-white text-[8px] font-bold flex items-center justify-center">VISA</div>
-                <div className="w-10 h-6 bg-black rounded text-white text-[8px] font-bold flex items-center justify-center">APay</div>
-                <div className="w-10 h-6 bg-white border border-gray-300 rounded text-gray-700 text-[8px] font-bold flex items-center justify-center">GPay</div>
-                <div className="w-10 h-6 bg-blue-500 rounded text-white text-[8px] font-bold flex items-center justify-center">PP</div>
+              <div className="flex items-center justify-center">
+                <PaymentIcons />
               </div>
             </div>
 

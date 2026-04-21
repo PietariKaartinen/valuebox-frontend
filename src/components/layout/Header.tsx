@@ -95,13 +95,12 @@ export default function Header() {
         <div className="bg-navy py-3">
           <div className="container-main flex items-center gap-4">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 shrink-0">
-              <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
-                </svg>
-              </div>
-              <span className="text-white text-xl font-bold">ValueBox</span>
+            <Link href="/" className="flex items-center shrink-0">
+              <img
+                src="/images/wordmark.svg"
+                alt="ValueBox"
+                className="h-8 w-auto"
+              />
             </Link>
 
             {/* Search bar - Desktop */}

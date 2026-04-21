@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import CountryCurrencySelector from './CountryCurrencySelector';
 import NewsletterSignup from './NewsletterSignup';
+import PaymentIcons from '../ui/PaymentIcons';
 
 export default function Footer({ showNewsletter = true }: { showNewsletter?: boolean }) {
 
@@ -108,13 +109,12 @@ export default function Footer({ showNewsletter = true }: { showNewsletter?: boo
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             {/* Logo + location */}
             <div className="flex items-center gap-4">
-              <Link href="/" className="flex items-center gap-2">
-                <div className="w-7 h-7 bg-accent rounded-lg flex items-center justify-center">
-                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10 2L3 7v11h14V7l-7-5zm0 2.236L15 8v8H5V8l5-3.764z" />
-                  </svg>
-                </div>
-                <span className="text-gray-900 font-bold text-lg">ValueBox</span>
+              <Link href="/" className="flex items-center">
+                <img
+                  src="/images/wordmark-dark.svg"
+                  alt="ValueBox"
+                  className="h-7 w-auto"
+                />
               </Link>
               <CountryCurrencySelector variant="footer" />
             </div>
@@ -148,13 +148,7 @@ export default function Footer({ showNewsletter = true }: { showNewsletter?: boo
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 {/* Payment icons */}
-                <div className="flex items-center gap-2">
-                  <div className="w-10 h-6 bg-red-600 rounded text-white text-[8px] font-bold flex items-center justify-center">MC</div>
-                  <div className="w-10 h-6 bg-blue-700 rounded text-white text-[8px] font-bold flex items-center justify-center">VISA</div>
-                  <div className="w-10 h-6 bg-black rounded text-white text-[8px] font-bold flex items-center justify-center">APay</div>
-                  <div className="w-10 h-6 bg-white border border-gray-300 rounded text-gray-700 text-[8px] font-bold flex items-center justify-center">GPay</div>
-                  <div className="w-10 h-6 bg-blue-500 rounded text-white text-[8px] font-bold flex items-center justify-center">PP</div>
-                </div>
+                <PaymentIcons />
                 <span className="text-gray-400 text-xs">Payments secured by Stripe.</span>
               </div>
               <div className="flex items-center gap-4 text-xs text-gray-400">

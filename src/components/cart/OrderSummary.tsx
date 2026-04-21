@@ -2,6 +2,7 @@
 
 import type { ShopifyCart } from '@/lib/shopify/types';
 import { formatPrice } from '@/lib/utils';
+import PaymentIcons from '../ui/PaymentIcons';
 
 interface OrderSummaryProps {
   cart: ShopifyCart;
@@ -114,12 +115,8 @@ export default function OrderSummary({ cart }: OrderSummaryProps) {
       </div>
 
       {/* Payment icons */}
-      <div className="mt-4 flex items-center justify-center gap-2">
-        <div className="w-10 h-6 bg-red-600 rounded text-white text-[8px] font-bold flex items-center justify-center">MC</div>
-        <div className="w-10 h-6 bg-blue-700 rounded text-white text-[8px] font-bold flex items-center justify-center">VISA</div>
-        <div className="w-10 h-6 bg-black rounded text-white text-[8px] font-bold flex items-center justify-center">APay</div>
-        <div className="w-10 h-6 bg-white border border-gray-300 rounded text-gray-700 text-[8px] font-bold flex items-center justify-center">GPay</div>
-        <div className="w-10 h-6 bg-blue-500 rounded text-white text-[8px] font-bold flex items-center justify-center">PP</div>
+      <div className="mt-4 flex items-center justify-center">
+        <PaymentIcons />
       </div>
 
       <p className="text-center text-[10px] text-gray-400 mt-3">
