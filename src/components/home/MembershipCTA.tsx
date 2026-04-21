@@ -100,10 +100,10 @@ export function GiveawayBanner() {
               Enter to win exclusive prizes including electronics, gift cards, travel vouchers, and more. Members get unlimited entries.
             </p>
             <div className="flex flex-wrap gap-3 mt-4">
-              <Link href="#" className="btn-primary text-sm py-2">
+              <Link href="/premium" className="btn-primary text-sm py-2">
                 Contest &amp; Giveaways
               </Link>
-              <Link href="#" className="text-white/70 hover:text-white text-sm font-medium flex items-center gap-1 transition-colors">
+              <Link href="/premium" className="text-white/70 hover:text-white text-sm font-medium flex items-center gap-1 transition-colors">
                 See What&apos;s Included →
               </Link>
             </div>
@@ -140,7 +140,7 @@ export function TryFreeBar() {
               Cancel anytime
             </span>
           </div>
-          <Link href="#" className="bg-navy text-white font-semibold px-6 py-2.5 rounded-lg hover:bg-navy-light transition-colors text-sm">
+          <Link href="/premium" className="bg-navy text-white font-semibold px-6 py-2.5 rounded-lg hover:bg-navy-light transition-colors text-sm">
             Learn about ValueBox+ →
           </Link>
         </div>
@@ -166,7 +166,7 @@ export function BottomMembershipCTA() {
                 <span>VIP Support</span>
               </div>
             </div>
-            <Link href="#" className="text-accent hover:text-accent-dark font-medium text-sm whitespace-nowrap">
+            <Link href="/premium" className="text-accent hover:text-accent-dark font-medium text-sm whitespace-nowrap">
               Your Membership →
             </Link>
           </div>

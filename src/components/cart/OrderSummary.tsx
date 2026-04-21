@@ -1,15 +1,19 @@
 'use client';
 
+import Link from 'next/link';
 import type { ShopifyCart } from '@/lib/shopify/types';
 import { formatPrice } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthProvider';
 import { SHIPPING, getShippingCost, isFreeShipping } from '@/lib/constants/shipping';
 import PaymentIcons from '../ui/PaymentIcons';
+import { Gem } from 'lucide-react';
 
 interface OrderSummaryProps {
   cart: ShopifyCart;
 }
 
 export default function OrderSummary({ cart }: OrderSummaryProps) {
+  const { isAuthenticated, isMember } = useAuth();
   const subtotal = parseFloat(cart.cost.subtotalAmount.amount);
   const total = parseFloat(cart.cost.totalAmount.amount);
   const tax = cart.cost.totalTaxAmount
@@ -35,6 +39,9 @@ export default function OrderSummary({ cart }: OrderSummaryProps) {
   const standardFree = isFreeShipping(subtotal, 'standard');
   const priorityFree = isFreeShipping(subtotal, 'priority');
   const standardCost = getShippingCost(subtotal, 'standard');
+
+  // Estimate member savings (10% of subtotal as a rough estimate)
+  const estimatedMemberSavings = subtotal * 0.1;
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-6 sticky top-32">
@@ -90,6 +97,45 @@ export default function OrderSummary({ cart }: OrderSummaryProps) {
           </p>
           <p className="text-xs text-green-600 mt-0.5">
             That&apos;s {discountPercent}% off your order
+          </p>
+        </div>
+      )}
+
+      {/* Member savings callout */}
+      {!isMember && subtotal > 0 && (
+        <div className="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3">
+          <div className="flex items-start gap-2">
+            <Gem className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+            <div>
+              <p className="text-sm text-amber-800 font-medium">
+                ValueBox+ members could save up to {formatPrice(estimatedMemberSavings)}
+              </p>
+              {!isAuthenticated ? (
+                <Link
+                  href="/login"
+                  className="text-xs text-sky-500 hover:text-sky-600 font-medium mt-1 inline-block"
+                >
+                  Sign in to unlock member pricing →
+                </Link>
+              ) : (
+                <Link
+                  href="/premium"
+                  className="text-xs text-sky-500 hover:text-sky-600 font-medium mt-1 inline-block"
+                >
+                  Upgrade to ValueBox+ →
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Member active callout */}
+      {isMember && (
+        <div className="mt-3 bg-sky-50 border border-sky-200 rounded-lg p-3 flex items-center gap-2">
+          <Gem className="w-4 h-4 text-sky-600 shrink-0" />
+          <p className="text-sm text-sky-800 font-medium">
+            ValueBox+ member pricing applied
           </p>
         </div>
       )}

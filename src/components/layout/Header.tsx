@@ -5,10 +5,11 @@ import Image from 'next/image';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/contexts/CartProvider';
+import { useAuth } from '@/contexts/AuthProvider';
 import { NAV_CATEGORIES, MAIN_CATEGORIES, SUBCATEGORIES } from '@/lib/constants';
 import { formatPrice } from '@/lib/utils';
 import MobileNav from './MobileNav';
-import { Search, User, ShoppingCart, Menu, ChevronDown, Zap } from 'lucide-react';
+import { Search, User, ShoppingCart, Menu, ChevronDown, Zap, Package, Gem, Settings, LogOut } from 'lucide-react';
 import CountryCurrencySelector from './CountryCurrencySelector';
 
 interface PredictiveResult {
@@ -23,14 +24,17 @@ interface PredictiveResult {
 export default function Header() {
   const router = useRouter();
   const { cartCount } = useCart();
+  const { customer, isAuthenticated, isLoading: authLoading, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [predictions, setPredictions] = useState<PredictiveResult[]>([]);
   const [showPredictions, setShowPredictions] = useState(false);
   const megaMenuRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -41,9 +45,23 @@ export default function Header() {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setShowPredictions(false);
       }
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    }
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setUserMenuOpen(false);
+        setMegaMenuOpen(false);
+        setShowPredictions(false);
+      }
     }
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
   }, []);
 
   const fetchPredictions = useCallback(async (q: string) => {
@@ -75,6 +93,12 @@ export default function Header() {
       setShowPredictions(false);
       router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
+  };
+
+  const handleSignOut = async () => {
+    setUserMenuOpen(false);
+    await logout();
+    router.push('/');
   };
 
   return (
@@ -191,11 +215,90 @@ export default function Header() {
                 <Search className="w-5 h-5" />
               </button>
 
-              {/* Sign in */}
-              <Link href="#" className="hidden sm:flex items-center gap-2 text-white hover:text-accent transition-colors">
-                <User className="w-5 h-5" />
-                <span className="text-sm whitespace-nowrap">Sign in / Account</span>
-              </Link>
+              {/* Auth area - Desktop */}
+              <div className="hidden sm:block relative" ref={userMenuRef}>
+                {authLoading ? (
+                  <div className="flex items-center gap-2 text-white">
+                    <User className="w-5 h-5" />
+                    <span className="text-sm">...</span>
+                  </div>
+                ) : isAuthenticated && customer ? (
+                  <>
+                    <button
+                      onClick={() => setUserMenuOpen(!userMenuOpen)}
+                      className="flex items-center gap-2 text-white hover:text-accent transition-colors"
+                    >
+                      <User className="w-5 h-5" />
+                      <span className="text-sm whitespace-nowrap">
+                        Hi, {customer.firstName || 'there'}
+                      </span>
+                      <ChevronDown className={`w-3.5 h-3.5 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    {/* User dropdown */}
+                    {userMenuOpen && (
+                      <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50">
+                        <Link
+                          href="/account"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          onClick={() => setUserMenuOpen(false)}
+                        >
+                          <User className="w-4 h-4 text-gray-400" />
+                          My Account
+                        </Link>
+                        <Link
+                          href="/account/orders"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          onClick={() => setUserMenuOpen(false)}
+                        >
+                          <Package className="w-4 h-4 text-gray-400" />
+                          Orders
+                        </Link>
+                        <Link
+                          href="/account/membership"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          onClick={() => setUserMenuOpen(false)}
+                        >
+                          <Gem className="w-4 h-4 text-gray-400" />
+                          ValueBox+
+                        </Link>
+                        <Link
+                          href="/account/settings"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          onClick={() => setUserMenuOpen(false)}
+                        >
+                          <Settings className="w-4 h-4 text-gray-400" />
+                          Settings
+                        </Link>
+                        <div className="border-t border-gray-100 my-1" />
+                        <button
+                          onClick={handleSignOut}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          <LogOut className="w-4 h-4 text-gray-400" />
+                          Sign Out
+                        </button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <Link
+                      href="/login"
+                      className="flex items-center gap-2 text-white hover:text-accent transition-colors"
+                    >
+                      <User className="w-5 h-5" />
+                      <span className="text-sm whitespace-nowrap">Sign In</span>
+                    </Link>
+                    <Link
+                      href="/signup"
+                      className="text-gray-400 hover:text-white text-sm transition-colors hidden lg:block"
+                    >
+                      Join
+                    </Link>
+                  </div>
+                )}
+              </div>
 
               {/* Mobile menu toggle */}
               <button

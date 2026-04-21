@@ -69,10 +69,10 @@ export default function Footer({ showNewsletter = true }: { showNewsletter?: boo
             <div>
               <h4 className="font-semibold text-gray-900 mb-4">Membership</h4>
               <ul className="space-y-2.5">
-                <li><Link href="#" className="text-sm text-gray-500 hover:text-accent transition-colors">How It Works</Link></li>
-                <li><Link href="#" className="text-sm text-gray-500 hover:text-accent transition-colors">Perks</Link></li>
-                <li><Link href="#" className="text-sm text-gray-500 hover:text-accent transition-colors">Pricing</Link></li>
-                <li><Link href="#" className="text-sm text-gray-500 hover:text-accent transition-colors">Manage Membership</Link></li>
+                <li><Link href="/premium" className="text-sm text-gray-500 hover:text-accent transition-colors">How It Works</Link></li>
+                <li><Link href="/premium" className="text-sm text-gray-500 hover:text-accent transition-colors">Perks</Link></li>
+                <li><Link href="/premium#pricing" className="text-sm text-gray-500 hover:text-accent transition-colors">Pricing</Link></li>
+                <li><Link href="/account/membership" className="text-sm text-gray-500 hover:text-accent transition-colors">Manage Membership</Link></li>
               </ul>
             </div>
 

@@ -2,8 +2,10 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthProvider';
 import { MAIN_CATEGORIES, SUBCATEGORIES, SPECIAL_COLLECTIONS } from '@/lib/constants';
-import { X, ChevronDown, ChevronRight, User, ShoppingCart, ShoppingBag, Zap } from 'lucide-react';
+import { X, ChevronDown, ChevronRight, User, ShoppingCart, ShoppingBag, Zap, Package, Gem, Settings, LogOut } from 'lucide-react';
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -12,8 +14,16 @@ interface MobileNavProps {
 
 export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const { customer, isAuthenticated, isLoading: authLoading, logout } = useAuth();
+  const router = useRouter();
 
   if (!isOpen) return null;
+
+  const handleSignOut = async () => {
+    onClose();
+    await logout();
+    router.push('/');
+  };
 
   return (
     <div className="fixed inset-0 z-[60] md:hidden">
@@ -37,11 +47,55 @@ export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
           </button>
         </div>
 
-        {/* Sign in */}
-        <Link href="#" className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 min-h-[44px]" onClick={onClose}>
-          <User className="w-5 h-5 text-gray-500" />
-          <span className="text-sm font-medium text-gray-700">Sign in / Account</span>
-        </Link>
+        {/* Auth section */}
+        {authLoading ? (
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 min-h-[44px]">
+            <User className="w-5 h-5 text-gray-400" />
+            <span className="text-sm text-gray-400">Loading...</span>
+          </div>
+        ) : isAuthenticated && customer ? (
+          <div className="border-b border-gray-100">
+            <div className="px-4 py-3">
+              <p className="text-sm font-medium text-gray-900">
+                Hi, {customer.firstName || 'there'}
+              </p>
+              <p className="text-xs text-gray-400">{customer.email}</p>
+            </div>
+            <Link href="/account" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 min-h-[44px]" onClick={onClose}>
+              <User className="w-4 h-4 text-gray-400" />
+              My Account
+            </Link>
+            <Link href="/account/orders" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 min-h-[44px]" onClick={onClose}>
+              <Package className="w-4 h-4 text-gray-400" />
+              Orders
+            </Link>
+            <Link href="/account/membership" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 min-h-[44px]" onClick={onClose}>
+              <Gem className="w-4 h-4 text-gray-400" />
+              ValueBox+
+            </Link>
+            <Link href="/account/settings" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 min-h-[44px]" onClick={onClose}>
+              <Settings className="w-4 h-4 text-gray-400" />
+              Settings
+            </Link>
+            <button
+              onClick={handleSignOut}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 min-h-[44px]"
+            >
+              <LogOut className="w-4 h-4 text-gray-400" />
+              Sign Out
+            </button>
+          </div>
+        ) : (
+          <div className="border-b border-gray-100">
+            <Link href="/login" className="flex items-center gap-3 px-4 py-3 min-h-[44px]" onClick={onClose}>
+              <User className="w-5 h-5 text-gray-500" />
+              <span className="text-sm font-medium text-gray-700">Sign In</span>
+            </Link>
+            <Link href="/signup" className="flex items-center gap-3 px-4 py-2.5 min-h-[44px]" onClick={onClose}>
+              <span className="text-sm text-sky-500 font-medium ml-8">Create Account</span>
+            </Link>
+          </div>
+        )}
 
         {/* Categories */}
         <div className="py-2">

@@ -2,14 +2,17 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import type { ParsedProduct } from '@/lib/shopify/types';
 import ProductGallery from '@/components/product/ProductGallery';
 import BadgeDisplay from '@/components/product/BadgeDisplay';
 import AddToCartButton from '@/components/product/AddToCartButton';
 import { useCart } from '@/contexts/CartProvider';
+import { useAuth } from '@/contexts/AuthProvider';
 import { formatPrice } from '@/lib/utils';
 import { SHIPPING, isFreeShipping } from '@/lib/constants/shipping';
 import PaymentIcons from '@/components/ui/PaymentIcons';
+import { Check } from 'lucide-react';
 
 interface ProductDetailClientProps {
   product: ParsedProduct;
@@ -18,6 +21,7 @@ interface ProductDetailClientProps {
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
   const router = useRouter();
   const { addToCart } = useCart();
+  const { isAuthenticated, isMember } = useAuth();
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isBuying, setIsBuying] = useState(false);
@@ -96,20 +100,59 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               )}
             </div>
 
-            {/* Member price */}
+            {/* Member price - auth-aware */}
             {product.memberPrice && (
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
-                <p className="text-sm font-medium text-amber-800">
-                  ValueBox+ Members:{' '}
-                  <span className="font-bold">
-                    {formatPrice(product.memberPrice, product.currencyCode)}
-                  </span>
-                  {product.memberDiscountPercent && (
-                    <span className="ml-2 text-amber-600">
-                      · Save {product.memberDiscountPercent}%
-                    </span>
-                  )}
-                </p>
+              <div className={`rounded-lg p-3 mb-4 ${
+                isMember
+                  ? 'bg-green-50 border border-green-200'
+                  : 'bg-amber-50 border border-amber-200'
+              }`}>
+                {isMember ? (
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-600" />
+                    <p className="text-sm font-medium text-green-800">
+                      Your ValueBox+ price:{' '}
+                      <span className="font-bold">
+                        {formatPrice(product.memberPrice, product.currencyCode)}
+                      </span>
+                      {product.memberDiscountPercent && (
+                        <span className="ml-2 text-green-600">
+                          · Save {product.memberDiscountPercent}%
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-sm font-medium text-amber-800">
+                      ValueBox+ Members:{' '}
+                      <span className="font-bold">
+                        {formatPrice(product.memberPrice, product.currencyCode)}
+                      </span>
+                      {product.memberDiscountPercent && (
+                        <span className="ml-2 text-amber-600">
+                          · Save {product.memberDiscountPercent}%
+                        </span>
+                      )}
+                    </p>
+                    {/* TODO: Apply member pricing at checkout via Shopify automatic discounts */}
+                    {!isAuthenticated ? (
+                      <Link
+                        href="/login"
+                        className="text-xs text-sky-500 hover:text-sky-600 font-medium mt-1 inline-block"
+                      >
+                        Sign in to unlock member pricing →
+                      </Link>
+                    ) : (
+                      <Link
+                        href="/premium"
+                        className="text-xs text-sky-500 hover:text-sky-600 font-medium mt-1 inline-block"
+                      >
+                        Upgrade to ValueBox+ to unlock this price →
+                      </Link>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
