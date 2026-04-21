@@ -80,11 +80,11 @@ export default function Footer({ showNewsletter = true }: { showNewsletter?: boo
             <div>
               <h4 className="font-semibold text-gray-900 mb-4">Support</h4>
               <ul className="space-y-2.5">
-                <li><Link href="#" className="text-sm text-gray-500 hover:text-accent transition-colors">Contact Us</Link></li>
-                <li><Link href="#" className="text-sm text-gray-500 hover:text-accent transition-colors">Order Tracking</Link></li>
-                <li><Link href="#" className="text-sm text-gray-500 hover:text-accent transition-colors">Shipping &amp; Delivery</Link></li>
-                <li><Link href="#" className="text-sm text-gray-500 hover:text-accent transition-colors">Returns &amp; Refunds</Link></li>
-                <li><Link href="#" className="text-sm text-gray-500 hover:text-accent transition-colors">FAQ</Link></li>
+                <li><Link href="/support" className="text-sm text-gray-500 hover:text-accent transition-colors">Contact Us</Link></li>
+                <li><Link href="/support" className="text-sm text-gray-500 hover:text-accent transition-colors">Order Tracking</Link></li>
+                <li><Link href="/support" className="text-sm text-gray-500 hover:text-accent transition-colors">Shipping &amp; Delivery</Link></li>
+                <li><Link href="/support" className="text-sm text-gray-500 hover:text-accent transition-colors">Returns &amp; Refunds</Link></li>
+                <li><Link href="/support" className="text-sm text-gray-500 hover:text-accent transition-colors">FAQ</Link></li>
               </ul>
             </div>
 

@@ -109,7 +109,7 @@ export default function Header() {
           <div className="container-main flex items-center justify-between">
             <CountryCurrencySelector variant="header" />
             <div className="hidden md:flex items-center gap-4 text-gray-400">
-              <Link href="#" className="hover:text-white transition-colors">Help</Link>
+              <Link href="/support" className="hover:text-white transition-colors">Help</Link>
               <Link href="#" className="hover:text-white transition-colors">Track Order</Link>
             </div>
           </div>

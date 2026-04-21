@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthProvider';
 import { MAIN_CATEGORIES, SUBCATEGORIES, SPECIAL_COLLECTIONS } from '@/lib/constants';
-import { X, ChevronDown, ChevronRight, User, ShoppingCart, ShoppingBag, Zap, Package, Gem, Settings, LogOut } from 'lucide-react';
+import { X, ChevronDown, ChevronRight, User, ShoppingCart, ShoppingBag, Zap, Package, Gem, Settings, LogOut, HelpCircle } from 'lucide-react';
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -173,6 +173,10 @@ export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
           <Link href="/cart" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 min-h-[44px]" onClick={onClose}>
             <ShoppingCart className="w-5 h-5 text-gray-400" />
             Cart
+          </Link>
+          <Link href="/support" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 min-h-[44px]" onClick={onClose}>
+            <HelpCircle className="w-5 h-5 text-gray-400" />
+            Help &amp; Support
           </Link>
         </div>
       </div>
