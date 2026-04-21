@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getCollectionByHandle, getCategoryCounts } from '@/lib/shopify';
+import { getProducts, getCategoryCounts } from '@/lib/shopify';
 import { ALL_COLLECTION_HANDLES } from '@/lib/constants';
 import { getCollectionTitle } from '@/lib/utils';
 import ShopPageClient from '@/components/shop/ShopPageClient';
@@ -28,18 +28,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CollectionPage({ params }: Props) {
   const { handle } = params;
 
-  let data;
+  // Validate the handle exists
+  if (!ALL_COLLECTION_HANDLES.includes(handle)) {
+    notFound();
+  }
+
+  // Always fetch ALL products so that client-side category filtering works
+  // across all categories, not just the one the user navigated from.
+  let products: import('@/lib/shopify/types').ParsedProduct[];
   let categoryCounts: Record<string, number> = {};
 
   try {
-    data = await getCollectionByHandle(handle, { first: 50 });
+    const data = await getProducts({ first: 50 });
+    products = data.products;
   } catch (error) {
-    console.error('Error fetching collection:', error);
-    data = null;
-  }
-
-  if (!data) {
-    notFound();
+    console.error('Error fetching products:', error);
+    products = [];
   }
 
   try {
@@ -48,11 +52,13 @@ export default async function CollectionPage({ params }: Props) {
     console.error('Error fetching category counts:', error);
   }
 
+  const collectionTitle = getCollectionTitle(handle);
+
   return (
     <ShopPageClient
-      products={data.products}
+      products={products}
       collectionHandle={handle}
-      collectionTitle={data.collection?.title || getCollectionTitle(handle)}
+      collectionTitle={collectionTitle}
       categoryCounts={categoryCounts}
     />
   );
