@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import type { ParsedProduct } from '@/lib/shopify/types';
 import ProductGrid from '@/components/product/ProductGrid';
 import FilterSidebar, { type FilterState } from './FilterSidebar';
@@ -26,7 +25,6 @@ export default function ShopPageClient({
   collectionTitle,
   categoryCounts: serverCategoryCounts,
 }: ShopPageClientProps) {
-  const router = useRouter();
   const [sortBy, setSortBy] = useState('BEST_SELLING');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAll, setShowAll] = useState(false);
@@ -44,39 +42,44 @@ export default function ShopPageClient({
     inStock: false,
   });
 
-  // Use server-provided category counts (global counts, not filtered)
-  const categoryCounts = serverCategoryCounts || {};
-
-  // Handle category change via URL navigation
-  const handleFilterChange = (newFilters: FilterState) => {
-    // Check if categories changed
-    if (newFilters.categories !== filters.categories &&
-        JSON.stringify(newFilters.categories) !== JSON.stringify(filters.categories)) {
-      const newCategories = newFilters.categories;
-
-      if (newCategories.length === 0) {
-        // No category selected — go to /shop (all products)
-        router.push('/shop');
-        return;
-      } else if (newCategories.length === 1) {
-        // Single category — navigate to that category page
-        router.push(`/shop/${newCategories[0]}`);
-        return;
-      }
-      // Multiple categories — navigate to the last selected one
-      const lastCategory = newCategories[newCategories.length - 1];
-      router.push(`/shop/${lastCategory}`);
-      return;
+  // Compute real category counts from product collection membership data.
+  // Each product carries a `collections` array with { handle, title } objects.
+  // We count how many products belong to each MAIN_CATEGORY.
+  const categoryCounts = useMemo(() => {
+    // Prefer server counts if they contain non-zero values
+    if (serverCategoryCounts) {
+      const hasRealCounts = Object.values(serverCategoryCounts).some((v) => v > 0);
+      if (hasRealCounts) return serverCategoryCounts;
     }
 
-    // For non-category filter changes, update state normally
+    // Compute from product data
+    const counts: Record<string, number> = {};
+    for (const cat of MAIN_CATEGORIES) {
+      counts[cat.handle] = products.filter((p) =>
+        p.collections.some((c) => c.handle === cat.handle)
+      ).length;
+    }
+    return counts;
+  }, [products, serverCategoryCounts]);
+
+  // Handle filter changes — all client-side, no navigation
+  const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);
     setCurrentPage(1);
   };
 
-  // Filter products (client-side for non-category filters)
+  // Filter products client-side
   const filteredProducts = useMemo(() => {
     let result = [...products];
+
+    // Category filter: keep products that belong to ANY selected category
+    if (filters.categories.length > 0) {
+      result = result.filter((p) =>
+        filters.categories.some((catHandle) =>
+          p.collections.some((c) => c.handle === catHandle)
+        )
+      );
+    }
 
     // Discount filter
     if (filters.discountMin) {
@@ -133,38 +136,43 @@ export default function ShopPageClient({
     activeFilters.push({
       label: cat?.title || getCollectionTitle(handle),
       onRemove: () => {
-        // Navigate to /shop when removing category
-        router.push('/shop');
+        setFilters((f) => ({
+          ...f,
+          categories: f.categories.filter((c) => c !== handle),
+        }));
+        setCurrentPage(1);
       },
     });
   });
   if (filters.discountMin) {
     activeFilters.push({
       label: `${filters.discountMin}% off or more`,
-      onRemove: () => setFilters((f) => ({ ...f, discountMin: null })),
+      onRemove: () => {
+        setFilters((f) => ({ ...f, discountMin: null }));
+        setCurrentPage(1);
+      },
     });
   }
   if (filters.inStock) {
     activeFilters.push({
       label: 'In stock only',
-      onRemove: () => setFilters((f) => ({ ...f, inStock: false })),
+      onRemove: () => {
+        setFilters((f) => ({ ...f, inStock: false }));
+        setCurrentPage(1);
+      },
     });
   }
 
   const clearAllFilters = () => {
-    // Navigate to /shop to clear category filter
-    if (collectionHandle) {
-      router.push('/shop');
-    } else {
-      setFilters({
-        categories: [],
-        discountMin: null,
-        priceMin: 0,
-        priceMax: 149,
-        rating: null,
-        inStock: false,
-      });
-    }
+    setFilters({
+      categories: [],
+      discountMin: null,
+      priceMin: 0,
+      priceMax: 149,
+      rating: null,
+      inStock: false,
+    });
+    setCurrentPage(1);
   };
 
   return (
