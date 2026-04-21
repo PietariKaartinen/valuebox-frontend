@@ -79,7 +79,7 @@ function CopyButton({ code }: { code: string }) {
 function Badge({ text, bgColor }: { text: string; bgColor: string }) {
   return (
     <span
-      className="inline-block text-[10px] font-bold px-2.5 py-0.5 rounded-full text-white uppercase tracking-wider"
+      className="inline-block text-[10px] font-bold px-2.5 py-0.5 rounded-full text-white uppercase tracking-wider shrink-0"
       style={{ backgroundColor: bgColor }}
     >
       {text}
@@ -90,14 +90,51 @@ function Badge({ text, bgColor }: { text: string; bgColor: string }) {
 function ExpiryText({ expiryDate }: { expiryDate: string }) {
   const expiringSoon = isExpiringSoon(expiryDate);
   return (
-    <p
-      className={`text-[11px] mt-1 ${
+    <span
+      className={`text-[11px] whitespace-nowrap ${
         expiringSoon ? 'text-red-600 font-semibold' : 'text-gray-400'
       }`}
     >
-      {expiringSoon ? '⏰ Expires ' : 'Expires '}
-      {formatExpiryDate(expiryDate)}
-    </p>
+      {expiringSoon ? '⏰ ' : ''}Exp. {formatExpiryDate(expiryDate)}
+    </span>
+  );
+}
+
+/** Top row shared by both card types: badge on the left, expiry/shop-link on the right */
+function TopRow({
+  bgColor,
+  badgeText,
+  expiryDate,
+  shopLink,
+}: {
+  bgColor: string;
+  badgeText?: string;
+  expiryDate?: string;
+  shopLink?: { href: string };
+}) {
+  const hasRight = !!expiryDate || !!shopLink;
+  const hasLeft = !!badgeText;
+
+  if (!hasLeft && !hasRight) return null;
+
+  return (
+    <div className="flex items-center justify-between gap-2 mb-2 min-h-[20px]">
+      <div className="flex items-center gap-1.5">
+        {badgeText && <Badge text={badgeText} bgColor={bgColor} />}
+      </div>
+      <div className="flex items-center gap-2">
+        {expiryDate && <ExpiryText expiryDate={expiryDate} />}
+        {shopLink && (
+          <Link
+            href={shopLink.href}
+            className="text-[11px] font-semibold hover:underline transition-colors whitespace-nowrap"
+            style={{ color: bgColor }}
+          >
+            Shop →
+          </Link>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -107,7 +144,7 @@ function GeneralCouponCard({ coupon }: { coupon: Coupon & { couponType: 'general
   return (
     <div
       className="flex-shrink-0 w-[300px] sm:w-[330px] bg-white rounded-xl rounded-l-none border-2 border-dashed border-gray-300 shadow-sm flex overflow-hidden"
-      style={{ minHeight: '220px' }}
+      style={{ minHeight: '200px' }}
     >
       {/* Perforated left edge */}
       <div
@@ -120,12 +157,12 @@ function GeneralCouponCard({ coupon }: { coupon: Coupon & { couponType: 'general
 
       {/* Card content */}
       <div className="flex-1 p-4 flex flex-col">
-        {/* Badge */}
-        {coupon.badgeText && (
-          <div className="mb-2">
-            <Badge text={coupon.badgeText} bgColor={bgColor} />
-          </div>
-        )}
+        {/* Top row: badge + expiry */}
+        <TopRow
+          bgColor={bgColor}
+          badgeText={coupon.badgeText}
+          expiryDate={coupon.expiryDate}
+        />
 
         {/* Discount value - big and bold */}
         <p
@@ -155,11 +192,8 @@ function GeneralCouponCard({ coupon }: { coupon: Coupon & { couponType: 'general
         {/* Spacer to push code box to bottom */}
         <div className="flex-1" />
 
-        {/* Code box */}
+        {/* Code box — always at the bottom */}
         <CopyButton code={coupon.code} />
-
-        {/* Expiry date */}
-        {coupon.expiryDate && <ExpiryText expiryDate={coupon.expiryDate} />}
       </div>
     </div>
   );
@@ -171,7 +205,7 @@ function ProductCouponCard({ coupon }: { coupon: Coupon & { couponType: 'product
   return (
     <div
       className="flex-shrink-0 w-[300px] sm:w-[330px] bg-white rounded-xl rounded-l-none border-2 border-dashed border-gray-300 shadow-sm flex overflow-hidden"
-      style={{ minHeight: '220px' }}
+      style={{ minHeight: '200px' }}
     >
       {/* Perforated left edge */}
       <div
@@ -184,12 +218,13 @@ function ProductCouponCard({ coupon }: { coupon: Coupon & { couponType: 'product
 
       {/* Card content */}
       <div className="flex-1 p-4 flex flex-col">
-        {/* Badge */}
-        {coupon.badgeText && (
-          <div className="mb-2">
-            <Badge text={coupon.badgeText} bgColor={bgColor} />
-          </div>
-        )}
+        {/* Top row: badge + expiry + shop link */}
+        <TopRow
+          bgColor={bgColor}
+          badgeText={coupon.badgeText}
+          expiryDate={coupon.expiryDate}
+          shopLink={{ href: `/products/${coupon.productHandle}` }}
+        />
 
         {/* Product section: image + discount info side by side */}
         <div className="flex gap-3 mb-2">
@@ -236,22 +271,8 @@ function ProductCouponCard({ coupon }: { coupon: Coupon & { couponType: 'product
         {/* Spacer to push code box to bottom */}
         <div className="flex-1" />
 
-        {/* Code box */}
+        {/* Code box — always at the bottom */}
         <CopyButton code={coupon.code} />
-
-        {/* Bottom row: expiry + shop link */}
-        <div className="flex items-center justify-between mt-1">
-          <div>
-            {coupon.expiryDate && <ExpiryText expiryDate={coupon.expiryDate} />}
-          </div>
-          <Link
-            href={`/products/${coupon.productHandle}`}
-            className="text-xs font-semibold hover:underline transition-colors"
-            style={{ color: bgColor }}
-          >
-            Shop product →
-          </Link>
-        </div>
       </div>
     </div>
   );
