@@ -9,37 +9,38 @@ import {
 } from '@/components/home/MembershipCTA';
 import Testimonials from '@/components/home/Testimonials';
 import FamiliarBrands from '@/components/home/FamiliarBrands';
-import FashionBrands from '@/components/home/FashionBrands';
+import CouponCarousel from '@/components/home/CouponCarousel';
 import { getCollectionByHandle } from '@/lib/shopify';
+import { getCouponsWithProducts } from '@/lib/shopify/coupons';
 import ProductCarousel from '@/components/product/ProductCarousel';
 
 export const revalidate = 3600;
 
 async function getHomeData() {
   try {
-    const [todaysDeals, fashionProducts, travelProducts] = await Promise.all([
+    const [todaysDeals, travelProducts, coupons] = await Promise.all([
       getCollectionByHandle('todays-deals', { first: 12 }),
-      getCollectionByHandle('fashion-accessories', { first: 12 }),
       getCollectionByHandle('travel-accessories', { first: 12 }),
+      getCouponsWithProducts(),
     ]);
 
     return {
       todaysDeals: todaysDeals?.products || [],
-      fashionProducts: fashionProducts?.products || [],
       travelProducts: travelProducts?.products || [],
+      coupons,
     };
   } catch (error) {
     console.error('Error fetching home data:', error);
     return {
       todaysDeals: [],
-      fashionProducts: [],
       travelProducts: [],
+      coupons: [],
     };
   }
 }
 
 export default async function HomePage() {
-  const { todaysDeals, travelProducts } = await getHomeData();
+  const { todaysDeals, travelProducts, coupons } = await getHomeData();
 
   return (
     <>
@@ -50,7 +51,7 @@ export default async function HomePage() {
         products={todaysDeals}
         viewAllHref="/shop/todays-deals"
       />
-      <FashionBrands />
+      <CouponCarousel coupons={coupons} />
       <ProductCarousel
         title="Best Deals in Travel Accessories"
         highlightWord="Travel Accessories"
