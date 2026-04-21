@@ -2,72 +2,46 @@
 
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { getCookie, setCookie } from '@/lib/utils';
+import { REGIONS, DEFAULT_REGION, getRegionById, type Region, type RegionId } from '@/lib/constants/regions';
 
-export interface Country {
-  code: string;
-  name: string;
+interface RegionContextType {
+  region: Region;
+  setRegion: (id: RegionId) => void;
   currency: string;
-  flag: string;
-}
-
-export const SUPPORTED_COUNTRIES: Country[] = [
-  { code: 'US', name: 'United States', currency: 'USD', flag: '🇺🇸' },
-  { code: 'CA', name: 'Canada', currency: 'CAD', flag: '🇨🇦' },
-  { code: 'GB', name: 'United Kingdom', currency: 'GBP', flag: '🇬🇧' },
-  { code: 'DE', name: 'Germany', currency: 'EUR', flag: '🇩🇪' },
-  { code: 'FR', name: 'France', currency: 'EUR', flag: '🇫🇷' },
-  { code: 'AU', name: 'Australia', currency: 'AUD', flag: '🇦🇺' },
-  { code: 'NL', name: 'Netherlands', currency: 'EUR', flag: '🇳🇱' },
-  { code: 'SE', name: 'Sweden', currency: 'SEK', flag: '🇸🇪' },
-  { code: 'NO', name: 'Norway', currency: 'NOK', flag: '🇳🇴' },
-  { code: 'DK', name: 'Denmark', currency: 'DKK', flag: '🇩🇰' },
-  { code: 'JP', name: 'Japan', currency: 'JPY', flag: '🇯🇵' },
-  { code: 'SG', name: 'Singapore', currency: 'SGD', flag: '🇸🇬' },
-  { code: 'NZ', name: 'New Zealand', currency: 'NZD', flag: '🇳🇿' },
-  { code: 'IE', name: 'Ireland', currency: 'EUR', flag: '🇮🇪' },
-  { code: 'FI', name: 'Finland', currency: 'EUR', flag: '🇫🇮' },
-  { code: 'BE', name: 'Belgium', currency: 'EUR', flag: '🇧🇪' },
-  { code: 'AT', name: 'Austria', currency: 'EUR', flag: '🇦🇹' },
-  { code: 'CH', name: 'Switzerland', currency: 'CHF', flag: '🇨🇭' },
-  { code: 'ES', name: 'Spain', currency: 'EUR', flag: '🇪🇸' },
-  { code: 'IT', name: 'Italy', currency: 'EUR', flag: '🇮🇹' },
-];
-
-interface CountryCurrencyContextType {
-  country: Country;
-  setCountry: (country: Country) => void;
+  currencySymbol: string;
   isOpen: boolean;
   openSelector: () => void;
   closeSelector: () => void;
 }
 
-const CountryCurrencyContext = createContext<CountryCurrencyContextType>({
-  country: SUPPORTED_COUNTRIES[0],
-  setCountry: () => {},
+const RegionContext = createContext<RegionContextType>({
+  region: DEFAULT_REGION,
+  setRegion: () => {},
+  currency: DEFAULT_REGION.currency,
+  currencySymbol: DEFAULT_REGION.symbol,
   isOpen: false,
   openSelector: () => {},
   closeSelector: () => {},
 });
 
 export function CountryCurrencyProvider({ children }: { children: React.ReactNode }) {
-  const [country, setCountryState] = useState<Country>(SUPPORTED_COUNTRIES[0]);
+  const [region, setRegionState] = useState<Region>(DEFAULT_REGION);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     // Hydrate from cookie
-    const savedCountryCode = getCookie('valuebox_country');
-    if (savedCountryCode) {
-      const found = SUPPORTED_COUNTRIES.find((c) => c.code === savedCountryCode);
-      if (found) {
-        setCountryState(found);
-      }
+    const savedRegionId = getCookie('valuebox_region');
+    if (savedRegionId) {
+      const found = getRegionById(savedRegionId);
+      setRegionState(found);
     }
   }, []);
 
-  const setCountry = useCallback((newCountry: Country) => {
-    setCountryState(newCountry);
-    setCookie('valuebox_country', newCountry.code, 365);
-    setCookie('valuebox_currency', newCountry.currency, 365);
+  const setRegion = useCallback((id: RegionId) => {
+    const found = getRegionById(id);
+    setRegionState(found);
+    setCookie('valuebox_region', found.id, 365);
+    setCookie('valuebox_currency', found.currency, 365);
     setIsOpen(false);
   }, []);
 
@@ -75,12 +49,28 @@ export function CountryCurrencyProvider({ children }: { children: React.ReactNod
   const closeSelector = useCallback(() => setIsOpen(false), []);
 
   return (
-    <CountryCurrencyContext.Provider value={{ country, setCountry, isOpen, openSelector, closeSelector }}>
+    <RegionContext.Provider
+      value={{
+        region,
+        setRegion,
+        currency: region.currency,
+        currencySymbol: region.symbol,
+        isOpen,
+        openSelector,
+        closeSelector,
+      }}
+    >
       {children}
-    </CountryCurrencyContext.Provider>
+    </RegionContext.Provider>
   );
 }
 
-export function useCountryCurrency() {
-  return useContext(CountryCurrencyContext);
+export { REGIONS };
+export type { Region, RegionId };
+
+export function useRegion() {
+  return useContext(RegionContext);
 }
+
+// Backward-compatible alias
+export const useCountryCurrency = useRegion;
