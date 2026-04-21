@@ -2,6 +2,7 @@
 
 import type { ShopifyCart } from '@/lib/shopify/types';
 import { formatPrice } from '@/lib/utils';
+import { SHIPPING, getShippingCost, isFreeShipping } from '@/lib/constants/shipping';
 import PaymentIcons from '../ui/PaymentIcons';
 
 interface OrderSummaryProps {
@@ -31,6 +32,10 @@ export default function OrderSummary({ cart }: OrderSummaryProps) {
     ? Math.round((discount / totalCompareAt) * 100)
     : 0;
 
+  const standardFree = isFreeShipping(subtotal, 'standard');
+  const priorityFree = isFreeShipping(subtotal, 'priority');
+  const standardCost = getShippingCost(subtotal, 'standard');
+
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-6 sticky top-32">
       <h2 className="text-lg font-bold text-gray-900 mb-4">Order Summary</h2>
@@ -49,9 +54,22 @@ export default function OrderSummary({ cart }: OrderSummaryProps) {
         )}
 
         <div className="flex justify-between">
-          <span className="text-gray-500">Shipping</span>
-          <span className="text-accent font-medium">Calculated at checkout</span>
+          <span className="text-gray-500">Shipping (Standard)</span>
+          {standardFree ? (
+            <span className="text-green-600 font-semibold">FREE</span>
+          ) : (
+            <span className="font-medium">{formatPrice(standardCost)}</span>
+          )}
         </div>
+
+        {/* Priority shipping upgrade hint */}
+        {!priorityFree && (
+          <p className="text-[11px] text-gray-400 -mt-1">
+            {standardFree
+              ? `Upgrade to Priority — FREE on orders $${SHIPPING.priority.freeThreshold}+`
+              : `Upgrade to Priority Shipping ($${SHIPPING.priority.price.toFixed(2)})`}
+          </p>
+        )}
 
         <div className="flex justify-between">
           <span className="text-gray-500">Tax</span>

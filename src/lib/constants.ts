@@ -72,8 +72,6 @@ export const NAV_CATEGORIES = [
   { handle: 'kids-toys', title: 'Kids & Toys' },
 ] as const;
 
-export const FREE_SHIPPING_THRESHOLD = 280;
-
 export const CATEGORY_IMAGES: Record<string, string> = {
   electronics: '/categories/electronics.svg',
   'home-kitchen': '/categories/home-kitchen.svg',

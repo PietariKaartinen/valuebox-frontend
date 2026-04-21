@@ -8,6 +8,7 @@ import BadgeDisplay from '@/components/product/BadgeDisplay';
 import AddToCartButton from '@/components/product/AddToCartButton';
 import { useCart } from '@/contexts/CartProvider';
 import { formatPrice } from '@/lib/utils';
+import { SHIPPING, isFreeShipping } from '@/lib/constants/shipping';
 import PaymentIcons from '@/components/ui/PaymentIcons';
 
 interface ProductDetailClientProps {
@@ -27,6 +28,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     ? parseFloat(selectedVariant.compareAtPrice.amount)
     : null;
   const savings = variantCompareAt ? variantCompareAt - variantPrice : null;
+
+  // Shipping eligibility based on product price
+  const standardFree = isFreeShipping(variantPrice, 'standard');
+  const priorityFree = isFreeShipping(variantPrice, 'priority');
 
   // Group options by name
   const optionGroups: Record<string, string[]> = {};
@@ -51,14 +56,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       setIsBuying(false);
     }
   };
-
-  // Estimated delivery dates
-  const deliveryStart = new Date();
-  deliveryStart.setDate(deliveryStart.getDate() + 5);
-  const deliveryEnd = new Date();
-  deliveryEnd.setDate(deliveryEnd.getDate() + 9);
-  const formatDate = (d: Date) =>
-    d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
   return (
     <section className="py-8">
@@ -116,17 +113,24 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               </div>
             )}
 
-            {/* Express delivery */}
-            <div className="flex items-center gap-2 mb-6">
-              <span className="bg-teal-500 text-white text-[10px] font-bold px-2 py-0.5 rounded">
-                EXPRESS
-              </span>
-              <span className="text-sm text-gray-600">
-                Estimated delivery{' '}
-                <strong>
-                  {formatDate(deliveryStart)} — {formatDate(deliveryEnd)}
-                </strong>
-              </span>
+            {/* Shipping info */}
+            <div className="mb-6 space-y-1">
+              <p className="text-sm text-gray-500">
+                🚚 {SHIPPING.standard.label}:{' '}
+                {standardFree ? (
+                  <span className="text-green-600 font-semibold">FREE</span>
+                ) : (
+                  <span>${SHIPPING.standard.price.toFixed(2)} (Free on orders ${SHIPPING.standard.freeThreshold}+)</span>
+                )}
+              </p>
+              <p className="text-sm text-gray-500">
+                ⚡ {SHIPPING.priority.label}:{' '}
+                {priorityFree ? (
+                  <span className="text-green-600 font-semibold">FREE</span>
+                ) : (
+                  <span>${SHIPPING.priority.price.toFixed(2)} (Free on orders ${SHIPPING.priority.freeThreshold}+)</span>
+                )}
+              </p>
             </div>
 
             {/* Variant selectors */}

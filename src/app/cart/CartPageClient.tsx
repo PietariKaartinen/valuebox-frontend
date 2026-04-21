@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { useCart } from '@/contexts/CartProvider';
 import CartLineItemComponent from '@/components/cart/CartLineItem';
 import OrderSummary from '@/components/cart/OrderSummary';
-import { FREE_SHIPPING_THRESHOLD } from '@/lib/constants';
-import { formatPrice } from '@/lib/utils';
+import { SHIPPING, getShippingProgressMessage } from '@/lib/constants/shipping';
+
 import ProductCarousel from '@/components/product/ProductCarousel';
 import type { ParsedProduct } from '@/lib/shopify/types';
 import Skeleton from '@/components/ui/Skeleton';
@@ -64,8 +64,7 @@ export default function CartPageClient() {
   }
 
   const subtotal = cart ? parseFloat(cart.cost.subtotalAmount.amount) : 0;
-  const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
-  const freeShippingProgress = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
+  const shippingProgress = getShippingProgressMessage(subtotal);
 
   const lines = cart?.lines.edges.map((e) => e.node) || [];
   const appliedCodes = cart?.discountCodes?.filter((dc) => dc.code) || [];
@@ -140,30 +139,81 @@ export default function CartPageClient() {
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="container-main py-8">
-        {/* Free shipping progress */}
+        {/* Free shipping progress — two-tier bar */}
         <div className="bg-white rounded-xl p-4 mb-6 border border-gray-100">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-semibold">
               <span className="text-accent">Free shipping</span> progress
             </h3>
           </div>
-          <div className="w-full bg-gray-100 rounded-full h-2 mb-2">
-            <div
-              className="bg-accent h-2 rounded-full transition-all duration-500"
-              style={{ width: `${freeShippingProgress}%` }}
-            />
+
+          {/* Two-tier progress bar */}
+          <div className="relative">
+            {/* Bar track */}
+            <div className="w-full bg-gray-100 rounded-full h-2 relative">
+              {/* Bar fill */}
+              <div
+                className="bg-accent h-2 rounded-full transition-all duration-500"
+                style={{ width: `${Math.min(100, shippingProgress.progress)}%` }}
+              />
+            </div>
+
+            {/* Marker labels */}
+            <div className="relative mt-1.5">
+              {/* Standard marker at 50% */}
+              <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
+                <div
+                  className={`w-3 h-3 rounded-full border-2 -mt-[18px] ${
+                    shippingProgress.standardFree
+                      ? 'bg-accent border-accent'
+                      : 'bg-white border-gray-300'
+                  } flex items-center justify-center`}
+                >
+                  {shippingProgress.standardFree && (
+                    <svg className="w-2 h-2 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </div>
+                <span className={`text-[10px] mt-0.5 whitespace-nowrap ${shippingProgress.standardFree ? 'text-accent font-semibold' : 'text-gray-400'}`}>
+                  ${SHIPPING.standard.freeThreshold} — Free Standard
+                </span>
+              </div>
+
+              {/* Priority marker at 100% */}
+              <div className="absolute right-0 flex flex-col items-end">
+                <div
+                  className={`w-3 h-3 rounded-full border-2 -mt-[18px] ${
+                    shippingProgress.priorityFree
+                      ? 'bg-accent border-accent'
+                      : 'bg-white border-gray-300'
+                  } flex items-center justify-center`}
+                >
+                  {shippingProgress.priorityFree && (
+                    <svg className="w-2 h-2 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </div>
+                <span className={`text-[10px] mt-0.5 whitespace-nowrap ${shippingProgress.priorityFree ? 'text-accent font-semibold' : 'text-gray-400'}`}>
+                  ${SHIPPING.priority.freeThreshold} — Free Priority
+                </span>
+              </div>
+            </div>
           </div>
-          <p className="text-xs text-gray-500">
-            {amountToFreeShipping > 0 ? (
-              <>
-                Add <strong className="text-accent">{formatPrice(amountToFreeShipping)}</strong> more
-                to unlock free standard shipping — Free shipping on all orders above{' '}
-                {formatPrice(FREE_SHIPPING_THRESHOLD)}
-              </>
-            ) : (
+
+          {/* Shipping message */}
+          <p className="text-xs text-gray-500 mt-5">
+            {shippingProgress.priorityFree ? (
               <span className="text-green-600 font-medium">
-                You&apos;ve unlocked free shipping!
+                {shippingProgress.message}
               </span>
+            ) : shippingProgress.standardFree ? (
+              <span className="text-green-600 font-medium">
+                {shippingProgress.message}
+              </span>
+            ) : (
+              <span>{shippingProgress.message}</span>
             )}
           </p>
         </div>
