@@ -13,6 +13,7 @@ import {
   UPDATE_CART,
   REMOVE_FROM_CART,
   GET_CART,
+  UPDATE_DISCOUNT_CODES,
 } from './queries/cart';
 import type {
   ShopifyProduct,
@@ -274,4 +275,22 @@ export async function getCart(cartId: string): Promise<ShopifyCart | null> {
   });
 
   return data.cart;
+}
+
+export async function updateDiscountCodes(
+  cartId: string,
+  discountCodes: string[]
+): Promise<{ cart: ShopifyCart; userErrors: { field: string; message: string }[] }> {
+  const data = await shopifyFetch<{
+    cartDiscountCodesUpdate: {
+      cart: ShopifyCart;
+      userErrors: { field: string; message: string }[];
+    };
+  }>({
+    query: UPDATE_DISCOUNT_CODES,
+    variables: { cartId, discountCodes },
+    cache: 'no-store',
+  });
+
+  return data.cartDiscountCodesUpdate;
 }

@@ -5,6 +5,7 @@ import {
   updateCart,
   removeFromCart,
   getCart,
+  updateDiscountCodes,
 } from '@/lib/shopify';
 
 export const runtime = 'nodejs';
@@ -12,7 +13,7 @@ export const runtime = 'nodejs';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { action, cartId, lines, lineIds } = body;
+    const { action, cartId, lines, lineIds, discountCodes } = body;
 
     let cart;
 
@@ -32,6 +33,13 @@ export async function POST(request: NextRequest) {
       case 'remove':
         cart = await removeFromCart(cartId, lineIds);
         break;
+      case 'updateDiscountCodes': {
+        const result = await updateDiscountCodes(cartId, discountCodes || []);
+        return NextResponse.json({
+          cart: result.cart,
+          userErrors: result.userErrors,
+        });
+      }
       default:
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }

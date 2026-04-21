@@ -4,6 +4,12 @@ import { createContext, useContext, useState, useEffect, useCallback, ReactNode 
 import type { ShopifyCart } from '@/lib/shopify/types';
 import { getCookie, setCookie } from '@/lib/utils';
 
+interface DiscountCodeResult {
+  success: boolean;
+  applicable?: boolean;
+  userErrors?: { field: string; message: string }[];
+}
+
 interface CartContextType {
   cart: ShopifyCart | null;
   cartCount: number;
@@ -14,6 +20,8 @@ interface CartContextType {
   updateQuantity: (lineId: string, quantity: number) => Promise<void>;
   removeFromCart: (lineId: string) => Promise<void>;
   clearCart: () => void;
+  applyDiscountCode: (code: string) => Promise<DiscountCodeResult>;
+  removeDiscountCodes: () => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType>({
@@ -26,6 +34,8 @@ const CartContext = createContext<CartContextType>({
   updateQuantity: async () => {},
   removeFromCart: async () => {},
   clearCart: () => {},
+  applyDiscountCode: async () => ({ success: false }),
+  removeDiscountCodes: async () => {},
 });
 
 export function useCart() {
@@ -33,6 +43,19 @@ export function useCart() {
 }
 
 async function cartFetch(action: string, body: Record<string, unknown>): Promise<ShopifyCart> {
+  const res = await fetch('/api/cart', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action, ...body }),
+  });
+  if (!res.ok) throw new Error('Cart API error');
+  return res.json();
+}
+
+async function cartFetchWithErrors(
+  action: string,
+  body: Record<string, unknown>
+): Promise<{ cart: ShopifyCart; userErrors?: { field: string; message: string }[] }> {
   const res = await fetch('/api/cart', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -135,6 +158,58 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setCookie('valuebox_cart_id', '', -1);
   }, []);
 
+  const applyDiscountCode = useCallback(
+    async (code: string): Promise<DiscountCodeResult> => {
+      if (!cart?.id) return { success: false };
+      setIsLoading(true);
+      try {
+        // Merge with existing codes
+        const existingCodes = (cart.discountCodes || []).map((dc) => dc.code);
+        const allCodes = Array.from(new Set([...existingCodes, code]));
+
+        const result = await cartFetchWithErrors('updateDiscountCodes', {
+          cartId: cart.id,
+          discountCodes: allCodes,
+        });
+
+        if (result.userErrors && result.userErrors.length > 0) {
+          return { success: false, userErrors: result.userErrors };
+        }
+
+        setCart(result.cart);
+
+        // Check if the code is applicable
+        const appliedCode = result.cart.discountCodes?.find(
+          (dc) => dc.code.toUpperCase() === code.toUpperCase()
+        );
+
+        return {
+          success: true,
+          applicable: appliedCode?.applicable ?? false,
+        };
+      } catch {
+        return { success: false, userErrors: [{ field: '', message: 'Failed to apply discount code. Please try again.' }] };
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [cart?.id, cart?.discountCodes]
+  );
+
+  const removeDiscountCodes = useCallback(async () => {
+    if (!cart?.id) return;
+    setIsLoading(true);
+    try {
+      const result = await cartFetchWithErrors('updateDiscountCodes', {
+        cartId: cart.id,
+        discountCodes: [],
+      });
+      setCart(result.cart);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [cart?.id]);
+
   return (
     <CartContext.Provider
       value={{
@@ -147,6 +222,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         updateQuantity,
         removeFromCart,
         clearCart,
+        applyDiscountCode,
+        removeDiscountCodes,
       }}
     >
       {children}

@@ -3,6 +3,10 @@ const CART_FRAGMENT = `
     id
     checkoutUrl
     totalQuantity
+    discountCodes {
+      code
+      applicable
+    }
     cost {
       totalAmount {
         amount
@@ -151,6 +155,21 @@ export const GET_CART = `
   query GetCart($cartId: ID!) {
     cart(id: $cartId) {
       ...CartFields
+    }
+  }
+`;
+
+export const UPDATE_DISCOUNT_CODES = `
+  ${CART_FRAGMENT}
+  mutation cartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!]!) {
+    cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {
+      cart {
+        ...CartFields
+      }
+      userErrors {
+        field
+        message
+      }
     }
   }
 `;

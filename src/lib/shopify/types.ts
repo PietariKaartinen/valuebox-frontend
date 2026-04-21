@@ -120,6 +120,10 @@ export interface ShopifyCart {
   id: string;
   checkoutUrl: string;
   totalQuantity: number;
+  discountCodes?: {
+    code: string;
+    applicable: boolean;
+  }[];
   cost: {
     totalAmount: ShopifyMoney;
     subtotalAmount: ShopifyMoney;
