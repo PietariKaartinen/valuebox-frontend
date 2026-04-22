@@ -8,7 +8,6 @@ import {
   BottomMembershipCTA,
 } from '@/components/home/MembershipCTA';
 import Testimonials from '@/components/home/Testimonials';
-import FamiliarBrands from '@/components/home/FamiliarBrands';
 import CouponCarousel from '@/components/home/CouponCarousel';
 import { getCollectionByHandle } from '@/lib/shopify';
 import { getCouponsWithProducts } from '@/lib/shopify/coupons';
@@ -63,7 +62,6 @@ export default async function HomePage() {
       <MembershipSection />
       <GiveawayBanner />
       <TryFreeBar />
-      <FamiliarBrands />
       <Testimonials />
       <BottomMembershipCTA />
     </>
