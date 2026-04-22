@@ -67,7 +67,7 @@ export default function StreamingSection() {
 
           {/* Right side — 40% — Placeholder media thumbnails */}
           <div className="w-full lg:w-[40%]">
-            <div className="grid grid-cols-2 min-[420px]:grid-cols-3 gap-3 max-w-sm mx-auto lg:mx-0">
+            <div className="grid grid-cols-2 min-[420px]:grid-cols-3 gap-x-3 gap-y-6 max-w-sm mx-auto lg:mx-0">
               {MEDIA_PLACEHOLDERS.map((item, idx) => (
                 <div
                   key={item.label}
