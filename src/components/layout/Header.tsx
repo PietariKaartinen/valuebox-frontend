@@ -30,6 +30,7 @@ export default function Header() {
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchCategory, setSearchCategory] = useState('');
   const [predictions, setPredictions] = useState<PredictiveResult[]>([]);
   const [showPredictions, setShowPredictions] = useState(false);
   const megaMenuRef = useRef<HTMLDivElement>(null);
@@ -91,7 +92,9 @@ export default function Header() {
     e?.preventDefault();
     if (searchQuery.trim()) {
       setShowPredictions(false);
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      const params = new URLSearchParams({ q: searchQuery.trim() });
+      if (searchCategory) params.set('category', searchCategory);
+      router.push(`/search?${params.toString()}`);
     }
   };
 
@@ -110,7 +113,7 @@ export default function Header() {
             <CountryCurrencySelector variant="header" />
             <div className="hidden md:flex items-center gap-4 text-gray-400">
               <Link href="/support" className="hover:text-white transition-colors">Help</Link>
-              <Link href="#" className="hover:text-white transition-colors">Track Order</Link>
+              <Link href="/support" className="hover:text-white transition-colors">Track Order</Link>
             </div>
           </div>
         </div>
@@ -131,8 +134,12 @@ export default function Header() {
             <div className="hidden md:flex flex-1 max-w-2xl" ref={searchRef}>
               <form onSubmit={handleSearchSubmit} className="flex w-full relative">
                 <div className="relative">
-                  <select className="h-full bg-gray-100 border-r border-gray-300 rounded-l-full px-3 py-2.5 text-sm text-gray-700 appearance-none pr-8 cursor-pointer focus:outline-none">
-                    <option>All Categories</option>
+                  <select
+                    value={searchCategory}
+                    onChange={(e) => setSearchCategory(e.target.value)}
+                    className="h-full bg-gray-100 border-r border-gray-300 rounded-l-full px-3 py-2.5 text-sm text-gray-700 appearance-none pr-8 cursor-pointer focus:outline-none"
+                  >
+                    <option value="">All Categories</option>
                     {MAIN_CATEGORIES.map((cat) => (
                       <option key={cat.handle} value={cat.handle}>{cat.title}</option>
                     ))}

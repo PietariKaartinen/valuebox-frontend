@@ -10,7 +10,7 @@ const benefits = [
   {
     icon: DollarSign,
     title: 'Member Pricing',
-    description: 'Save up to 20% on eligible items',
+    description: 'Save up to 35% on eligible items',
   },
   {
     icon: Gift,

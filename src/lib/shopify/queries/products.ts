@@ -84,7 +84,7 @@ const PRODUCT_FRAGMENT = `
       value
       type
     }
-    collections(first: 5) {
+    collections(first: 10) {
       edges {
         node {
           handle

@@ -77,7 +77,7 @@ export default function FilterSidebar({
           className="flex items-center justify-between w-full text-sm font-semibold text-gray-900 mb-3"
           onClick={() => toggleSection('category')}
         >
-          Category ({filters.categories.length})
+          Categories ({filters.categories.length})
           <svg
             className={`w-4 h-4 transition-transform ${expandedSections.category ? 'rotate-180' : ''}`}
             fill="none" viewBox="0 0 24 24" stroke="currentColor"

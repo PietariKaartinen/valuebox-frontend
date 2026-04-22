@@ -121,7 +121,7 @@ export default function CartPageClient() {
 
   if (!cart || lines.length === 0) {
     return (
-      <div className="container-main py-16 text-center">
+      <div className="container-main py-16 text-center min-h-[60vh] flex flex-col items-center justify-center">
         <svg className="w-20 h-20 text-gray-200 mx-auto mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
         </svg>
@@ -129,9 +129,14 @@ export default function CartPageClient() {
         <p className="text-gray-500 mb-6">
           Looks like you haven&apos;t added anything to your cart yet.
         </p>
-        <Link href="/shop" className="btn-primary inline-block">
-          Continue Shopping
-        </Link>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <Link href="/shop" className="btn-primary inline-block">
+            Continue Shopping
+          </Link>
+          <Link href="/shop/todays-deals" className="btn-secondary inline-block">
+            Browse Today&apos;s Deals
+          </Link>
+        </div>
       </div>
     );
   }

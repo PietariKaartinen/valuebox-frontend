@@ -9,9 +9,10 @@ interface SearchPageClientProps {
   query: string;
   products: ParsedProduct[];
   error: boolean;
+  category?: string;
 }
 
-export default function SearchPageClient({ query, products, error }: SearchPageClientProps) {
+export default function SearchPageClient({ query, products, error, category }: SearchPageClientProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -30,7 +31,7 @@ export default function SearchPageClient({ query, products, error }: SearchPageC
           </nav>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
             {query ? (
-              <>Search results for &ldquo;{query}&rdquo;</>
+              <>Search results for &ldquo;{query}&rdquo;{category && <span className="text-lg text-gray-500 font-normal"> in {category.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}</span>}</>
             ) : (
               'Search Products'
             )}

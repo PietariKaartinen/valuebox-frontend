@@ -174,9 +174,7 @@ export function BottomMembershipCTA() {
             <p className="text-sm text-gray-500">
               Secure Checkout | Easy Returns | 24/7 Support
             </p>
-            <p className="text-sm text-gray-400 mt-1">
-              4.8/5 from 3,200+ customers
-            </p>
+
           </div>
         </div>
       </div>

@@ -157,7 +157,7 @@ const faqCategories: FAQCategory[] = [
         question: 'What is ValueBox+?',
         answer: (
           <p>
-            ValueBox+ is our optional membership programme that gives you access to member pricing on eligible products (saving up to 20%), exclusive monthly giveaways, streaming access, and priority customer support. Shopping without a membership is always free — ValueBox+ is an add-on for those who want to save more.
+            ValueBox+ is our optional membership programme that gives you access to member pricing on eligible products (saving up to 35%), exclusive monthly giveaways, streaming access, and priority customer support. Shopping without a membership is always free — ValueBox+ is an add-on for those who want to save more.
           </p>
         ),
       },

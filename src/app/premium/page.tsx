@@ -4,7 +4,7 @@ import PremiumPageClient from './PremiumPageClient';
 export const metadata: Metadata = {
   title: 'ValueBox+ · Save More Every Order',
   description:
-    'Join ValueBox+ for member pricing up to 20% off, monthly giveaways, streaming access, and VIP support. Try free for 30 days.',
+    'Join ValueBox+ for member pricing up to 35% off, monthly giveaways, streaming access, and VIP support. Try free for 30 days.',
 };
 
 export default function PremiumPage() {

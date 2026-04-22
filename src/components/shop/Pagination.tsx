@@ -31,7 +31,10 @@ export default function Pagination({
         </button>
       )}
       <p className="text-sm text-gray-500">
-        Showing {start}-{end} of {totalResults} results
+        {totalResults === 0
+          ? 'No results found'
+          : `Showing ${start}\u2013${end} of ${totalResults} result${totalResults === 1 ? '' : 's'}`
+        }
       </p>
       {totalPages > 1 && (
         <div className="flex items-center gap-2">
@@ -40,7 +43,7 @@ export default function Pagination({
             disabled={currentPage === 1}
             className="text-sm text-gray-400 hover:text-gray-600 disabled:opacity-30"
           >
-            ← Prev
+            &larr; Prev
           </button>
           <span className="text-sm text-gray-400">
             page {currentPage} of {totalPages}
@@ -50,7 +53,7 @@ export default function Pagination({
             disabled={currentPage === totalPages}
             className="text-sm text-gray-400 hover:text-gray-600 disabled:opacity-30"
           >
-            Next →
+            Next &rarr;
           </button>
         </div>
       )}

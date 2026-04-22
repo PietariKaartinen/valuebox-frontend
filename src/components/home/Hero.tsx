@@ -42,7 +42,7 @@ export default function Hero() {
             <p className="text-gray-300 text-lg mb-2">
               Free Standard Shipping on orders $50+ · Free Priority Shipping on orders $99+
             </p>
-            <Link href="/shop" className="text-accent text-sm hover:underline inline-block mb-6">
+            <Link href="/premium" className="text-accent text-sm hover:underline inline-block mb-6">
               Join ValueBox+
             </Link>
 
@@ -50,7 +50,7 @@ export default function Hero() {
               <Link href="/shop" className="btn-primary">
                 Shop Now
               </Link>
-              <Link href="#" className="btn-secondary !border-white/30 !text-white hover:!bg-white/10">
+              <Link href="/premium" className="btn-secondary !border-white/30 !text-white hover:!bg-white/10">
                 Join ValueBox+
               </Link>
             </div>

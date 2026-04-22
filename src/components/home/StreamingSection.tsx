@@ -13,7 +13,7 @@ const MEDIA_PLACEHOLDERS = [
   { gradient: 'from-purple-600 to-indigo-800', icon: '🎬', label: 'Shows' },
   { gradient: 'from-red-600 to-orange-700', icon: '🍿', label: 'Movies' },
   { gradient: 'from-emerald-600 to-teal-800', icon: '📚', label: 'eBooks' },
-  { gradient: 'from-amber-500 to-orange-600', icon: '🎧', label: 'Audio' },
+  { gradient: 'from-amber-500 to-orange-600', icon: '🎧', label: 'Audiobooks' },
   { gradient: 'from-pink-600 to-rose-800', icon: '🎵', label: 'Music' },
   { gradient: 'from-blue-600 to-cyan-700', icon: '🎮', label: 'Games' },
 ];
@@ -72,7 +72,7 @@ export default function StreamingSection() {
                 <div
                   key={item.label}
                   className={`relative bg-gradient-to-br ${item.gradient} rounded-xl aspect-[3/4] flex flex-col items-center justify-center shadow-lg ${
-                    idx % 2 === 1 ? 'translate-y-3' : ''
+                    idx % 3 === 1 ? 'translate-y-4' : ''
                   }`}
                 >
                   <span className="text-3xl md:text-4xl mb-1.5 drop-shadow-lg">

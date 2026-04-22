@@ -116,7 +116,7 @@ export default function NewsletterSignup({ variant = 'footer' }: NewsletterSignu
       </div>
       <p className="text-gray-500 text-xs mt-1">
         Unsubscribe anytime. By subscribing, you agree to our{' '}
-        <Link href="#" className="underline hover:text-gray-300">Privacy Policy</Link>.
+        <Link href="/support" className="underline hover:text-gray-300">Privacy Policy</Link>.
       </p>
     </div>
   );

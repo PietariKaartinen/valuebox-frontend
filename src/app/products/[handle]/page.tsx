@@ -146,7 +146,7 @@ export default async function ProductPage({ params }: Props) {
               </span>
               <h3 className="text-2xl font-bold text-white mb-2">ValueBox+</h3>
               <ul className="text-gray-300 text-sm space-y-1.5 mb-4">
-                <li className="flex items-center gap-2">💰 Save up to 20% with member pricing</li>
+                <li className="flex items-center gap-2">💰 Save up to 35% with member pricing</li>
                 <li className="flex items-center gap-2">🎁 Monthly giveaways and prizes</li>
                 <li className="flex items-center gap-2">📺 Shows, movies, eBooks, audiobooks, music &amp; games included</li>
                 <li className="flex items-center gap-2">🎧 Priority support</li>

@@ -31,12 +31,12 @@ export default function Testimonials() {
               Thousands of Members
             </h2>
             <div className="flex gap-1">
-              {[1, 2, 3].map((i) => (
+              {testimonials.map((t) => (
                 <div
-                  key={i}
+                  key={t.avatar}
                   className="w-8 h-8 rounded-full bg-accent text-white text-xs font-bold flex items-center justify-center -ml-1 first:ml-0 border-2 border-white"
                 >
-                  {String.fromCharCode(64 + i)}
+                  {t.avatar}
                 </div>
               ))}
             </div>

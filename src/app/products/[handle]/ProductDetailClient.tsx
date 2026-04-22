@@ -176,32 +176,36 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               </p>
             </div>
 
-            {/* Variant selectors */}
-            {Object.entries(optionGroups).map(([optionName, values]) => (
-              <div key={optionName} className="mb-4">
-                <select
-                  className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
-                  onChange={(e) => {
-                    const idx = product.variants.findIndex((v) =>
-                      v.selectedOptions.some(
-                        (o) => o.name === optionName && o.value === e.target.value
-                      )
-                    );
-                    if (idx >= 0) setSelectedVariantIndex(idx);
-                  }}
-                  defaultValue=""
-                >
-                  <option value="" disabled>
-                    Select {optionName.toLowerCase()}
-                  </option>
-                  {values.map((value) => (
-                    <option key={value} value={value}>
-                      {value}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            ))}
+            {/* Variant selectors — only show for products with real options */}
+            {Object.entries(optionGroups)
+              .filter(([optionName, values]) =>
+                !(optionName === 'Title' && values.length === 1 && values[0] === 'Default Title')
+              )
+              .map(([optionName, values]) => (
+                <div key={optionName} className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {optionName}
+                  </label>
+                  <select
+                    className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                    defaultValue={values[0]}
+                    onChange={(e) => {
+                      const idx = product.variants.findIndex((v) =>
+                        v.selectedOptions.some(
+                          (o) => o.name === optionName && o.value === e.target.value
+                        )
+                      );
+                      if (idx >= 0) setSelectedVariantIndex(idx);
+                    }}
+                  >
+                    {values.map((value) => (
+                      <option key={value} value={value}>
+                        {value}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ))}
 
             {/* Quantity */}
             <div className="flex items-center gap-3 mb-6">
@@ -249,9 +253,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               <p className="text-sm font-medium text-gray-700 mb-2">
                 Secure Checkout | Easy Returns | 24/7 Support
               </p>
-              <p className="text-sm text-gray-500 mb-3">
-                4.8/5 from 3,000+ customers
-              </p>
+
               <div className="flex items-center justify-center">
                 <PaymentIcons />
               </div>

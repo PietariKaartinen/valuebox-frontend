@@ -44,7 +44,7 @@ export default function HowItWorks() {
           <h2 className="text-xl md:text-2xl font-bold text-gray-900">
             How It <span className="text-accent">Works</span>
           </h2>
-          <Link href="#" className="text-sm text-accent hover:text-accent-dark font-medium">
+          <Link href="/premium" className="text-sm text-accent hover:text-accent-dark font-medium">
             Your Membership →
           </Link>
         </div>
@@ -75,7 +75,7 @@ export default function HowItWorks() {
           <p className="text-sm text-gray-500 mb-3">
             Try free · Cancel anytime
           </p>
-          <Link href="#" className="btn-primary inline-block">
+          <Link href="/premium" className="btn-primary inline-block">
             View Membership →
           </Link>
         </div>

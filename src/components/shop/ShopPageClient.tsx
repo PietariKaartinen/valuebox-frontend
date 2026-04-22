@@ -91,7 +91,7 @@ export default function ShopPageClient({
     // Discount filter
     if (filters.discountMin) {
       result = result.filter(
-        (p) => (p.memberDiscountPercent || p.discountPercent || 0) >= filters.discountMin!
+        (p) => (p.discountPercent ?? 0) >= filters.discountMin!
       );
     }
 

@@ -3,7 +3,7 @@ import { searchProducts } from '@/lib/shopify/search';
 import SearchPageClient from './SearchPageClient';
 
 interface SearchPageProps {
-  searchParams: { q?: string };
+  searchParams: { q?: string; category?: string };
 }
 
 export function generateMetadata({ searchParams }: SearchPageProps): Metadata {
@@ -18,18 +18,26 @@ export function generateMetadata({ searchParams }: SearchPageProps): Metadata {
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const query = searchParams.q || '';
+  const category = searchParams.category || '';
   let products: Awaited<ReturnType<typeof searchProducts>>['products'] = [];
   let error = false;
 
   if (query.trim().length > 0) {
     try {
       const result = await searchProducts(query.trim());
-      products = result.products;
+      // If a category filter is specified, filter results to that category
+      if (category) {
+        products = result.products.filter((p) =>
+          p.collections.some((c) => c.handle === category)
+        );
+      } else {
+        products = result.products;
+      }
     } catch (e) {
       console.error('Search error:', e);
       error = true;
     }
   }
 
-  return <SearchPageClient query={query} products={products} error={error} />;
+  return <SearchPageClient query={query} products={products} error={error} category={category} />;
 }

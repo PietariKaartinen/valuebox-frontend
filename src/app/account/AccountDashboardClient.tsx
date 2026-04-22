@@ -77,7 +77,7 @@ export default function AccountDashboardClient() {
               <div>
                 <h2 className="font-bold text-gray-900 text-lg">Upgrade to ValueBox+</h2>
                 <p className="text-gray-500 text-sm mt-0.5">
-                  Save up to 20% on every order with member pricing.
+                  Save up to 35% on every order with member pricing.
                 </p>
               </div>
               <Link

@@ -10,7 +10,7 @@ const benefits = [
     emoji: '💰',
     title: 'Member Pricing',
     description:
-      'Save up to 20% on eligible items. Automatic discounts on thousands of products.',
+      'Save up to 35% on eligible items. Automatic discounts on thousands of products.',
   },
   {
     emoji: '🎁',
@@ -34,7 +34,7 @@ const benefits = [
 
 const comparisonFeatures = [
   { feature: 'Browse & Shop', guest: true, member: true },
-  { feature: 'Member Pricing (up to 20% off)', guest: false, member: true },
+  { feature: 'Member Pricing (up to 35% off)', guest: false, member: true },
   { feature: 'Monthly Giveaways', guest: false, member: true },
   { feature: 'Streaming & Media (Shows, Movies, eBooks, Audiobooks, Music, Games)', guest: false, member: true },
   { feature: 'VIP Support', guest: false, member: true },
@@ -63,7 +63,7 @@ const faqs = [
   {
     question: 'What is ValueBox+ membership?',
     answer:
-      'ValueBox+ is our premium membership program that gives you access to exclusive member pricing (up to 20% off), monthly giveaways, streaming content, and VIP customer support. It\'s designed to help you save more on every order.',
+      'ValueBox+ is our premium membership program that gives you access to exclusive member pricing (up to 35% off), monthly giveaways, streaming content, and VIP customer support. It\'s designed to help you save more on every order.',
   },
   {
     question: 'How does member pricing work?',
