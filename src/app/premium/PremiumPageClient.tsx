@@ -20,9 +20,10 @@ const benefits = [
   },
   {
     emoji: '📺',
-    title: 'Streaming Access',
+    title: 'Streaming & Media Library',
     description:
-      'Movies, shows, books, and more. Availability varies by region.',
+      'Thousands of shows, movies, eBooks, audiobooks, music tracks, and games. Stream on any device, anytime. All included with your membership at no extra cost.',
+    mediaPills: true,
   },
   {
     emoji: '🎧',
@@ -35,7 +36,7 @@ const comparisonFeatures = [
   { feature: 'Browse & Shop', guest: true, member: true },
   { feature: 'Member Pricing (up to 20% off)', guest: false, member: true },
   { feature: 'Monthly Giveaways', guest: false, member: true },
-  { feature: 'Streaming Access', guest: false, member: true },
+  { feature: 'Streaming & Media (Shows, Movies, eBooks, Audiobooks, Music, Games)', guest: false, member: true },
   { feature: 'VIP Support', guest: false, member: true },
   { feature: 'Free Standard Shipping ($50+)', guest: true, member: true },
 ];
@@ -54,7 +55,7 @@ const steps = [
   {
     step: '3',
     title: 'Enjoy Perks',
-    description: 'Giveaways, streaming, and priority support.',
+    description: 'Giveaways, streaming & media, and priority support.',
   },
 ];
 
@@ -90,9 +91,14 @@ const faqs = [
       'Currently, giveaways are only available to US residents aged 18 and older. We\'re working on expanding eligibility to more regions in the future.',
   },
   {
-    question: 'What streaming content is included?',
+    question: 'What streaming content is included with ValueBox+?',
     answer:
-      'ValueBox+ includes access to a growing library of movies, TV shows, books, and more. Content availability varies by region. New titles are added regularly.',
+      'Your ValueBox+ membership includes access to a growing library of shows, movies, eBooks, audiobooks, music, and games. Content is accessible on any device via your browser. The library is updated regularly with new titles. Availability may vary by region \u2014 see our content library for what\u2019s available in your area.',
+  },
+  {
+    question: 'Do I need to pay extra for streaming?',
+    answer:
+      'No. Streaming and media access is included with your ValueBox+ membership at no additional cost. Whether you\u2019re on the monthly ($9.99/mo) or annual ($79.99/yr) plan, you get full access to the entire media library.',
   },
 ];
 
@@ -167,11 +173,27 @@ export default function PremiumPageClient() {
                 <div className="text-4xl mb-4">{benefit.emoji}</div>
                 <h3 className="font-bold text-gray-900 mb-2">{benefit.title}</h3>
                 <p className="text-sm text-gray-500">{benefit.description}</p>
+                {'mediaPills' in benefit && benefit.mediaPills && (
+                  <div className="flex flex-wrap justify-center gap-1.5 mt-3">
+                    {[
+                      { icon: '🎬', label: 'Shows' },
+                      { icon: '🍿', label: 'Movies' },
+                      { icon: '📚', label: 'eBooks' },
+                      { icon: '🎧', label: 'Audiobooks' },
+                      { icon: '🎵', label: 'Music' },
+                      { icon: '🎮', label: 'Games' },
+                    ].map((m) => (
+                      <span key={m.label} className="inline-flex items-center gap-1 text-[11px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                        <span>{m.icon}</span> {m.label}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>
           <p className="text-xs text-gray-400 text-center mt-6">
-            Savings vary by product. Giveaways US-only, 18+. Streaming availability varies.
+            Savings vary by product. Giveaways US-only, 18+. Streaming availability varies. Content library is updated regularly.
           </p>
         </div>
       </section>

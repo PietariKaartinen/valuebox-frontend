@@ -19,8 +19,8 @@ const benefits = [
   },
   {
     icon: Tv,
-    title: 'Streaming Access',
-    description: 'Movies, TV, and more included',
+    title: 'Streaming & Media',
+    description: 'Shows, movies, eBooks, audiobooks, music, and games — all included',
   },
   {
     icon: Headphones,

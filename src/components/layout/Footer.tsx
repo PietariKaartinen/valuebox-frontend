@@ -73,6 +73,7 @@ export default function Footer({ showNewsletter = true }: { showNewsletter?: boo
                 <li><Link href="/premium" className="text-sm text-gray-500 hover:text-accent transition-colors">Perks</Link></li>
                 <li><Link href="/premium#pricing" className="text-sm text-gray-500 hover:text-accent transition-colors">Pricing</Link></li>
                 <li><Link href="/account/membership" className="text-sm text-gray-500 hover:text-accent transition-colors">Manage Membership</Link></li>
+                <li><Link href="/premium" className="text-sm text-gray-500 hover:text-accent transition-colors">Media Library</Link></li>
               </ul>
             </div>
 

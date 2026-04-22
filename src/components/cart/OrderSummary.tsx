@@ -110,6 +110,9 @@ export default function OrderSummary({ cart }: OrderSummaryProps) {
               <p className="text-sm text-amber-800 font-medium">
                 ValueBox+ members could save up to {formatPrice(estimatedMemberSavings)}
               </p>
+              <p className="text-xs text-amber-700/70 mt-0.5">
+                Plus: stream shows, movies, and more &mdash; included with membership.
+              </p>
               {!isAuthenticated ? (
                 <Link
                   href="/login"

@@ -7,6 +7,7 @@ import {
   TryFreeBar,
   BottomMembershipCTA,
 } from '@/components/home/MembershipCTA';
+import StreamingSection from '@/components/home/StreamingSection';
 import Testimonials from '@/components/home/Testimonials';
 import CouponCarousel from '@/components/home/CouponCarousel';
 import { getCollectionByHandle } from '@/lib/shopify';
@@ -60,6 +61,7 @@ export default async function HomePage() {
       <CategoryGrid />
       <HowItWorks />
       <MembershipSection />
+      <StreamingSection />
       <GiveawayBanner />
       <TryFreeBar />
       <Testimonials />
