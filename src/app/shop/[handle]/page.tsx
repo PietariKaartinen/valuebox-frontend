@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getProducts, getCategoryCounts } from '@/lib/shopify';
+import { getProducts } from '@/lib/shopify';
 import { ALL_COLLECTION_HANDLES, HANDLE_TO_PARENT, MAIN_CATEGORIES } from '@/lib/constants';
 import { getCollectionTitle } from '@/lib/utils';
 import ShopPageClient from '@/components/shop/ShopPageClient';
@@ -33,23 +33,16 @@ export default async function CollectionPage({ params }: Props) {
     notFound();
   }
 
-  // Always fetch ALL products so that client-side category filtering works
+  // Fetch ALL products so that client-side category filtering works
   // across all categories, not just the one the user navigated from.
   let products: import('@/lib/shopify/types').ParsedProduct[];
-  let categoryCounts: Record<string, number> = {};
 
   try {
-    const data = await getProducts({ first: 50 });
+    const data = await getProducts({ first: 250 });
     products = data.products;
   } catch (error) {
     console.error('Error fetching products:', error);
     products = [];
-  }
-
-  try {
-    categoryCounts = await getCategoryCounts();
-  } catch (error) {
-    console.error('Error fetching category counts:', error);
   }
 
   const collectionTitle = getCollectionTitle(handle);
@@ -60,12 +53,14 @@ export default async function CollectionPage({ params }: Props) {
   const isMainCategory = MAIN_CATEGORIES.some((c) => c.handle === handle);
   const effectiveHandle = isMainCategory ? handle : parentHandle || handle;
 
+  // Category counts are computed client-side from the full product set
+  // in ShopPageClient, so no separate server-side query is needed.
   return (
     <ShopPageClient
       products={products}
       collectionHandle={effectiveHandle}
       collectionTitle={collectionTitle}
-      categoryCounts={categoryCounts}
+      categoryCounts={{}}
     />
   );
 }

@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { getProducts, getCategoryCounts } from '@/lib/shopify';
+import { getProducts } from '@/lib/shopify';
 import ShopPageClient from '@/components/shop/ShopPageClient';
 
 export const metadata: Metadata = {
@@ -10,21 +10,16 @@ export const metadata: Metadata = {
 
 export default async function ShopPage() {
   let products: import('@/lib/shopify/types').ParsedProduct[];
-  let categoryCounts: Record<string, number> = {};
 
   try {
-    const data = await getProducts({ first: 50 });
+    const data = await getProducts({ first: 250 });
     products = data.products;
   } catch (error) {
     console.error('Error fetching products:', error);
     products = [];
   }
 
-  try {
-    categoryCounts = await getCategoryCounts();
-  } catch (error) {
-    console.error('Error fetching category counts:', error);
-  }
-
-  return <ShopPageClient products={products} categoryCounts={categoryCounts} />;
+  // Category counts are computed client-side from the full product set
+  // in ShopPageClient, so no separate server-side query is needed.
+  return <ShopPageClient products={products} categoryCounts={{}} />;
 }

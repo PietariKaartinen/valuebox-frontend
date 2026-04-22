@@ -5,7 +5,6 @@ import {
   GET_COLLECTION_BY_HANDLE,
   GET_COLLECTIONS,
   GET_PRODUCT_RECOMMENDATIONS,
-  buildCollectionCountsQuery,
 } from './queries/products';
 import {
   CREATE_CART,
@@ -171,49 +170,15 @@ export async function getCollections() {
   return data.collections.edges.map((e) => e.node);
 }
 
+/**
+ * Category counts are now computed client-side in ShopPageClient from
+ * the full product dataset (product.collections). The Storefront API
+ * does not expose productsCount on the Collection type, so the previous
+ * server-side approach silently failed. This function is kept as a
+ * no-op stub for backward compatibility.
+ */
 export async function getCategoryCounts(): Promise<Record<string, number>> {
-  const { MAIN_CATEGORIES, SUBCATEGORIES, HANDLE_TO_PARENT } = await import('@/lib/constants');
-
-  // Build a flat list of ALL handles we need to query (main + sub)
-  const allHandles: string[] = [];
-  for (const cat of MAIN_CATEGORIES) {
-    allHandles.push(cat.handle);
-    for (const sub of SUBCATEGORIES[cat.handle] || []) {
-      allHandles.push(sub.handle);
-    }
-  }
-
-  const variables: Record<string, string> = {};
-  allHandles.forEach((h, i) => {
-    variables[`handle${i + 1}`] = h;
-  });
-
-  const query = buildCollectionCountsQuery(allHandles.length);
-
-  const data = await shopifyFetch<Record<string, { handle: string; productsCount: { count: number } } | null>>({
-    query,
-    variables,
-    cache: 'force-cache',
-    tags: ['category-counts'],
-  });
-
-  // Sum subcategory counts into their parent main category
-  const counts: Record<string, number> = {};
-  for (const cat of MAIN_CATEGORIES) {
-    counts[cat.handle] = 0;
-  }
-
-  for (let i = 1; i <= allHandles.length; i++) {
-    const collection = data[`c${i}`];
-    if (collection) {
-      const parent = HANDLE_TO_PARENT[collection.handle];
-      if (parent) {
-        counts[parent] = (counts[parent] || 0) + collection.productsCount.count;
-      }
-    }
-  }
-
-  return counts;
+  return {};
 }
 
 export async function getProductRecommendations(productId: string): Promise<ParsedProduct[]> {
