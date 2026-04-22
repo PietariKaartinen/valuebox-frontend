@@ -5,7 +5,7 @@ import {
   GET_COLLECTION_BY_HANDLE,
   GET_COLLECTIONS,
   GET_PRODUCT_RECOMMENDATIONS,
-  GET_COLLECTION_PRODUCT_COUNTS,
+  buildCollectionCountsQuery,
 } from './queries/products';
 import {
   CREATE_CART,
@@ -172,26 +172,44 @@ export async function getCollections() {
 }
 
 export async function getCategoryCounts(): Promise<Record<string, number>> {
-  const { MAIN_CATEGORIES } = await import('@/lib/constants');
-  const handles = MAIN_CATEGORIES.map((c) => c.handle);
+  const { MAIN_CATEGORIES, SUBCATEGORIES, HANDLE_TO_PARENT } = await import('@/lib/constants');
+
+  // Build a flat list of ALL handles we need to query (main + sub)
+  const allHandles: string[] = [];
+  for (const cat of MAIN_CATEGORIES) {
+    allHandles.push(cat.handle);
+    for (const sub of SUBCATEGORIES[cat.handle] || []) {
+      allHandles.push(sub.handle);
+    }
+  }
 
   const variables: Record<string, string> = {};
-  handles.forEach((h, i) => {
+  allHandles.forEach((h, i) => {
     variables[`handle${i + 1}`] = h;
   });
 
+  const query = buildCollectionCountsQuery(allHandles.length);
+
   const data = await shopifyFetch<Record<string, { handle: string; productsCount: { count: number } } | null>>({
-    query: GET_COLLECTION_PRODUCT_COUNTS,
+    query,
     variables,
     cache: 'force-cache',
     tags: ['category-counts'],
   });
 
+  // Sum subcategory counts into their parent main category
   const counts: Record<string, number> = {};
-  for (let i = 1; i <= handles.length; i++) {
+  for (const cat of MAIN_CATEGORIES) {
+    counts[cat.handle] = 0;
+  }
+
+  for (let i = 1; i <= allHandles.length; i++) {
     const collection = data[`c${i}`];
     if (collection) {
-      counts[collection.handle] = collection.productsCount.count;
+      const parent = HANDLE_TO_PARENT[collection.handle];
+      if (parent) {
+        counts[parent] = (counts[parent] || 0) + collection.productsCount.count;
+      }
     }
   }
 

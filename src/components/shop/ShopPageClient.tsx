@@ -7,7 +7,7 @@ import ProductGrid from '@/components/product/ProductGrid';
 import FilterSidebar, { type FilterState } from './FilterSidebar';
 import SortDropdown from './SortDropdown';
 import Pagination from './Pagination';
-import { MAIN_CATEGORIES } from '@/lib/constants';
+import { MAIN_CATEGORIES, CATEGORY_HANDLE_GROUPS } from '@/lib/constants';
 import { getCollectionTitle } from '@/lib/utils';
 
 interface ShopPageClientProps {
@@ -44,7 +44,8 @@ export default function ShopPageClient({
 
   // Compute real category counts from product collection membership data.
   // Each product carries a `collections` array with { handle, title } objects.
-  // We count how many products belong to each MAIN_CATEGORY.
+  // We count how many products belong to each MAIN_CATEGORY, including products
+  // that are in subcategory collections (e.g. phone-charging → electronics).
   const categoryCounts = useMemo(() => {
     // Prefer server counts if they contain non-zero values
     if (serverCategoryCounts) {
@@ -52,11 +53,12 @@ export default function ShopPageClient({
       if (hasRealCounts) return serverCategoryCounts;
     }
 
-    // Compute from product data
+    // Compute from product data — match subcategory handles too
     const counts: Record<string, number> = {};
     for (const cat of MAIN_CATEGORIES) {
+      const group = CATEGORY_HANDLE_GROUPS[cat.handle] || [cat.handle];
       counts[cat.handle] = products.filter((p) =>
-        p.collections.some((c) => c.handle === cat.handle)
+        p.collections.some((c) => group.includes(c.handle))
       ).length;
     }
     return counts;
@@ -72,12 +74,17 @@ export default function ShopPageClient({
   const filteredProducts = useMemo(() => {
     let result = [...products];
 
-    // Category filter: keep products that belong to ANY selected category
+    // Category filter: keep products that belong to ANY selected category.
+    // Also match subcategory collections under their parent main category.
     if (filters.categories.length > 0) {
+      // Build a flat set of all handles to match (main + sub)
+      const matchHandles = new Set<string>();
+      for (const catHandle of filters.categories) {
+        const group = CATEGORY_HANDLE_GROUPS[catHandle] || [catHandle];
+        for (const h of group) matchHandles.add(h);
+      }
       result = result.filter((p) =>
-        filters.categories.some((catHandle) =>
-          p.collections.some((c) => c.handle === catHandle)
-        )
+        p.collections.some((c) => matchHandles.has(c.handle))
       );
     }
 

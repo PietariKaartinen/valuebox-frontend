@@ -72,6 +72,33 @@ export const NAV_CATEGORIES = [
   { handle: 'kids-toys', title: 'Kids & Toys' },
 ] as const;
 
+/**
+ * Map each main-category handle to an array containing itself + all its subcategory handles.
+ * Used for filtering: selecting "Electronics" should also match products in
+ * phone-charging, computer-desk, audio-accessories, etc.
+ */
+export const CATEGORY_HANDLE_GROUPS: Record<string, string[]> = Object.fromEntries(
+  MAIN_CATEGORIES.map((cat) => [
+    cat.handle,
+    [cat.handle, ...(SUBCATEGORIES[cat.handle]?.map((s) => s.handle) || [])],
+  ])
+);
+
+/**
+ * Reverse map: given any collection handle (main or sub), return the parent
+ * main-category handle. Returns undefined for special collections.
+ */
+export const HANDLE_TO_PARENT: Record<string, string> = (() => {
+  const map: Record<string, string> = {};
+  for (const cat of MAIN_CATEGORIES) {
+    map[cat.handle] = cat.handle;
+    for (const sub of SUBCATEGORIES[cat.handle] || []) {
+      map[sub.handle] = cat.handle;
+    }
+  }
+  return map;
+})();
+
 export const CATEGORY_IMAGES: Record<string, string> = {
   electronics: '/categories/electronics.svg',
   'home-kitchen': '/categories/home-kitchen.svg',

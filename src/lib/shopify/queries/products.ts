@@ -180,22 +180,24 @@ export const GET_PRODUCT_RECOMMENDATIONS = `
   }
 `;
 
-export const GET_COLLECTION_PRODUCT_COUNTS = `
+/**
+ * Build a dynamic GraphQL query that fetches productsCount for an arbitrary
+ * number of collection handles. Each handle gets an aliased field `c{index}`.
+ */
+export function buildCollectionCountsQuery(handleCount: number): string {
+  const vars = Array.from({ length: handleCount }, (_, i) => `$handle${i + 1}: String!`).join('\n    ');
+  const fields = Array.from(
+    { length: handleCount },
+    (_, i) => `c${i + 1}: collection(handle: $handle${i + 1}) { handle productsCount { count } }`
+  ).join('\n    ');
+  return `
   query GetCollectionProductCounts(
-    $handle1: String!
-    $handle2: String!
-    $handle3: String!
-    $handle4: String!
-    $handle5: String!
-    $handle6: String!
-    $handle7: String!
+    ${vars}
   ) {
-    c1: collection(handle: $handle1) { handle productsCount { count } }
-    c2: collection(handle: $handle2) { handle productsCount { count } }
-    c3: collection(handle: $handle3) { handle productsCount { count } }
-    c4: collection(handle: $handle4) { handle productsCount { count } }
-    c5: collection(handle: $handle5) { handle productsCount { count } }
-    c6: collection(handle: $handle6) { handle productsCount { count } }
-    c7: collection(handle: $handle7) { handle productsCount { count } }
+    ${fields}
   }
 `;
+}
+
+// Legacy static query kept for reference / backwards compat
+export const GET_COLLECTION_PRODUCT_COUNTS = buildCollectionCountsQuery(7);

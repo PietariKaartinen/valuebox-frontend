@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getProducts, getCategoryCounts } from '@/lib/shopify';
-import { ALL_COLLECTION_HANDLES } from '@/lib/constants';
+import { ALL_COLLECTION_HANDLES, HANDLE_TO_PARENT, MAIN_CATEGORIES } from '@/lib/constants';
 import { getCollectionTitle } from '@/lib/utils';
 import ShopPageClient from '@/components/shop/ShopPageClient';
 
@@ -54,10 +54,16 @@ export default async function CollectionPage({ params }: Props) {
 
   const collectionTitle = getCollectionTitle(handle);
 
+  // If the handle is a subcategory, resolve to the parent main category
+  // so the sidebar pre-selects the correct main category filter.
+  const parentHandle = HANDLE_TO_PARENT[handle];
+  const isMainCategory = MAIN_CATEGORIES.some((c) => c.handle === handle);
+  const effectiveHandle = isMainCategory ? handle : parentHandle || handle;
+
   return (
     <ShopPageClient
       products={products}
-      collectionHandle={handle}
+      collectionHandle={effectiveHandle}
       collectionTitle={collectionTitle}
       categoryCounts={categoryCounts}
     />
